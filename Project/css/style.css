@@ -1,4 +1,12 @@
+* {
+    background-color: red;
+}
 canvas {
     border: solid;
     border-color: black;
+}
+#game {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

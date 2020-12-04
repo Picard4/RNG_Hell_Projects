@@ -1,0 +1,13 @@
+E:\JohnAbbottProgramming\Game\Game\obj\Debug\Game.csprojAssemblyReference.cache
+E:\JohnAbbottProgramming\Game\Game\bin\Debug\Game.exe.config
+E:\JohnAbbottProgramming\Game\Game\bin\Debug\Game.exe
+E:\JohnAbbottProgramming\Game\Game\bin\Debug\Game.pdb
+E:\JohnAbbottProgramming\Game\Game\obj\Debug\Game.exe
+E:\JohnAbbottProgramming\Game\Game\obj\Debug\Game.pdb
+F:\JohnAbbottProgramming\Game\Game\bin\Debug\Game.exe.config
+F:\JohnAbbottProgramming\Game\Game\bin\Debug\Game.exe
+F:\JohnAbbottProgramming\Game\Game\bin\Debug\Game.pdb
+F:\JohnAbbottProgramming\Game\Game\obj\Debug\Game.csprojAssemblyReference.cache
+F:\JohnAbbottProgramming\Game\Game\obj\Debug\Game.csproj.CoreCompileInputs.cache
+F:\JohnAbbottProgramming\Game\Game\obj\Debug\Game.exe
+F:\JohnAbbottProgramming\Game\Game\obj\Debug\Game.pdb

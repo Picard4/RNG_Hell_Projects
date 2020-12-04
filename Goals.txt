@@ -1,0 +1,12 @@
+Obstacles that bounce off walls
+bigChungusHecc
+Online mode with rollback and lag :)
+SELECTABLE easy mode
+allow player to choose attack direction
+Bring back shields and -1 HP in some way
+Bring back warping
+Make it possible to ensure your score is not deleted, and make it possible to reduce your odds of walk death
+3 Items to fulfill the above and preserve the original
+Speed up obstacles at intervals
+Status effects upon getting hit? Random moving, damage for moving unless you warp, OHKO etc
+Add sound effects and maybe music. Add this somewhere https://www.youtube.com/watch?v=jEexefuB62c
