@@ -1,12 +1,44 @@
 * {
     background-color: red;
 }
+#main-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 canvas {
+    display: none;
     border: solid;
     border-color: black;
+}
+ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+}
+#mode-selection {
+    display: flex;
+    justify-content: space-around;
+}
+#mode-selection-form {
+    display: flex;
+    flex-direction: column;
+
+}
+#start-button {
+    background-color: blue;
+    padding: 1em;
+}
+#start-button:hover {
+    background-color: goldenrod;
 }
 #game {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+#game-over {
+    display: none;
 }
