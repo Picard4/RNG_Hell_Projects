@@ -11,7 +11,9 @@ class Player {
         this.y = canvas.height / 2;
         this.width = playerSide;
         this.height = playerSide
+
         this.radius = playerRadius;
+        this.innerCircleColor = "green";
 
         this.hp = 10;
         this.speed = 10;
@@ -30,7 +32,7 @@ class Player {
         context.fillRect(0 - this.width / 2, 0 - this.height / 2, this.width, this.height);
 
         // The inner circle
-        context.fillStyle = 'green';
+        context.fillStyle = this.innerCircleColor;
         // spawn the circle in the center of the square
         context.beginPath();
         context.arc(0, 0, this.radius, 0, 2 * Math.PI);
@@ -62,26 +64,22 @@ class Player {
         let upWallCheck = this.y - this.height / 2 <= 0;
         if (upWallCheck) {
             this.y = this.height /2;
-            return;
         }
 
         let downWallCheck = this.y + this.height / 2 >= canvas.height;
         if (downWallCheck) {
             this.y = canvas.height - this.height / 2;
-            return;
         }
 
         // Horizontal checks
         let leftWallCheck = this.x - this.width / 2 <= 0;
         if (leftWallCheck) {
             this.x = this.width / 2;
-            return;
         }
 
         let rightWallCheck = this.x + this.width / 2 >= canvas.width;
         if (rightWallCheck) {
             this.x = canvas.width - this.width / 2;
-            return;
         }
     }
 }

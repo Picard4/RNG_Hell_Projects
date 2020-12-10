@@ -12,29 +12,32 @@
     <div id="main-menu">
         <h1 id="game-title">RNG HELL</h1>
         <form id="mode-selection-form" name="mode-selection-form" method="post">
-            
+
             <div id="mode-selection">
                 <ul>
                     <li>
                         <label for="easy-mode" class="difficulty-options-label">Easy Mode</label>
-                        <input type="radio" class="difficulty-options" id="easy-mode" name="difficulty-mode" tabindex="1" />
+                        <input type="radio" class="difficulty-options" id="easy-mode" name="difficulty-mode"
+                            tabindex="1" />
                     </li>
-    
+
                     <li>
                         <label for="normal-mode" class="difficulty-options-label">Normal Mode</label>
-                        <input type="radio" class="difficulty-options" id="normal-mode" name="difficulty-mode" tabindex="2" checked="checked" />
+                        <input type="radio" class="difficulty-options" id="normal-mode" name="difficulty-mode"
+                            tabindex="2" checked="checked" />
                     </li>
                 </ul>
-    
+
                 <ul>
                     <li>
                         <label for="online-mode" class="online-options-label">Online Mode</label>
-                        <input type="radio" class="online-options" id="online-mode" name="online-choice" tabindex="1" />
+                        <input type="radio" class="online-options" id="online-mode" name="online-choice" tabindex="3" />
                     </li>
-    
+
                     <li>
                         <label for="offline-mode" class="online-options-label">Offline Mode</label>
-                        <input type="radio" class="online-options" id="offline-mode" name="online-choice" tabindex="2" checked="checked" />
+                        <input type="radio" class="online-options" id="offline-mode" name="online-choice" tabindex="4"
+                            checked="checked" />
                     </li>
                 </ul>
             </div>
@@ -42,13 +45,44 @@
             <button id="start-button">COMMENCE THE GAMBLING SIMULATION</button>
         </form>
     </div>
-    <div id="game">
-        <canvas></canvas>
+    <div id="game-container">
+        <div id="game">
+            <ul id="game-stats" class="stat-list">
+                <li class="statistic" class="first-stat">
+                    <h1>Score </h1>
+                    <h1 id="score"></h1>
+                </li>
+                <li class="statistic" class="second-stat">
+                    <h1>Score</h1>
+                    <h1>5</h1>
+                </li>
+                <li class="statistic" class="third-stat">
+                    <h1>Score</h1>
+                    <h1>5</h1>
+                </li>
+            </ul>
+            <canvas></canvas>
+            <ul id="player-stats" class="stat-list">
+                <li class="statistic" class="first-stat">
+                    <h1>HP</h1>
+                    <h1 id="hp"></h1>
+                </li>
+                <li class="statistic" class="second-stat">
+                    <h1>Score</h1>
+                    <h1>5</h1>
+                </li>
+                <li class="statistic" class="third-stat">
+                    <h1>Score</h1>
+                    <h1>5</h1>
+                </li>
+            </ul>
+        </div>
     </div>
     <div id="game-over">
         <h1>GAME OVER</h1>
         <ul id="game-over-messages"></ul>
         <button>RETRY</button>
+        <button>RAGEQUIT</button>
     </div>
     <script src="../js/player.js"></script>
     <script src="../js/enemy.js"></script>

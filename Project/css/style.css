@@ -1,16 +1,14 @@
 * {
     background-color: red;
 }
+
+/* Main Menu and General CSS */
 #main-menu {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-canvas {
-    display: none;
-    border: solid;
-    border-color: black;
-}
+
 ul {
     list-style: none;
     display: flex;
@@ -18,27 +16,73 @@ ul {
     justify-content: center;
     align-items: flex-end;
 }
+
+button {
+    background-color: blue;
+    padding: 1em;
+}
+
+button:hover {
+    background-color: goldenrod;
+}
+
 #mode-selection {
     display: flex;
     justify-content: space-around;
 }
+
 #mode-selection-form {
     display: flex;
     flex-direction: column;
-
 }
-#start-button {
-    background-color: blue;
-    padding: 1em;
-}
-#start-button:hover {
-    background-color: goldenrod;
+/* Game CSS */
+#game-container {
+    display: none;
 }
 #game {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    grid-template-areas: 
+    "game-stat canvas canvas canvas canvas player-stat"
+    "game-stat canvas canvas canvas canvas player-stat"
+    "game-stat canvas canvas canvas canvas player-stat";
 }
+
+canvas {
+    border: solid;
+    border-color: black;
+    grid-area: canvas;
+}
+
+#game-stats {
+    grid-area: game-stat;
+}
+#player-stats {
+    grid-area: player-stat;
+}
+.stat-list {
+    display: grid;
+    grid-template-areas: 
+    "first-stat"
+    "second-stat"
+    "third-stat";
+}
+.statistic {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-style: dotted;
+}
+.first-stat{
+    grid-area: first-stat;
+}
+.second-stat {
+    grid-area: second-stat;
+}
+.third-stat {
+    grid-area: third-stat;
+}
+
+/* Game Over CSS */
 #game-over {
     display: none;
 }
