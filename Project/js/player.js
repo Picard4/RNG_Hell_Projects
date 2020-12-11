@@ -6,17 +6,19 @@ const playerRadius = 10;
 
 class Player {
     constructor() {
+        /* Attributes for drawing */
         // The player will always spawn in the center
         this.x = canvas.width / 2;
         this.y = canvas.height / 2;
         this.width = playerSide;
         this.height = playerSide
-
         this.radius = playerRadius;
         this.innerCircleColor = "green";
 
+        /* Attributes for gameplay */
         this.hp = 10;
-        this.speed = 10;
+        this.startingHP = this.hp;
+        this.speed = 5;
     }
 
     draw() {
@@ -38,18 +40,46 @@ class Player {
         context.arc(0, 0, this.radius, 0, 2 * Math.PI);
         context.closePath();
         context.fill();
-        
+
         context.restore();
     }
 
-    update() {
+    update(keysPressed) {
+        this.move(keysPressed);
         this.evaluateWallCollision();
-        // movement will be handled in the arrow key event listener in main
         this.draw();
+    }
+
+    move(keysPressed){
+        if (keysPressed.ArrowUp === true){
+            this.y -= this.speed;
+        }
+        if (keysPressed.ArrowDown === true){
+            this.y += this.speed;
+        }
+        if (keysPressed.ArrowLeft === true){
+            this.x -= this.speed;
+        }
+        if (keysPressed.ArrowRight === true){
+            this.x += this.speed;
+        }
     }
 
     healOrDamage(valueToChangeHP) {
         this.hp += valueToChangeHP;
+
+        /* Change the inner circle's colour to reflect the player's health */
+        let thirdHp = this.startingHP / 3;
+        let twoThirdHp = thirdHp * 2;
+        if (this.hp < thirdHp) {
+            this.innerCircleColor = "darkred";
+        }
+        else if (this.hp < twoThirdHp) {
+            this.innerCircleColor = "yellow";
+        }
+        else {
+            this.innerCircleColor = "green";
+        }
     }
 
     oneHitKnockout() {
@@ -58,12 +88,10 @@ class Player {
     }
 
     evaluateWallCollision() {
-        // bug here based on which methods are last
-
         //Vertical checks
         let upWallCheck = this.y - this.height / 2 <= 0;
         if (upWallCheck) {
-            this.y = this.height /2;
+            this.y = this.height / 2;
         }
 
         let downWallCheck = this.y + this.height / 2 >= canvas.height;

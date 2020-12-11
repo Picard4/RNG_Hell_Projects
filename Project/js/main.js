@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // constants for the Canvas
     const canvas = document.getElementsByTagName('canvas')[0];
     const context = canvas.getContext('2d');
+    
 
     canvas.height = 700; 
     canvas.width = 1200; 
@@ -11,8 +12,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let gameStatus = {
         easyMode: false,
         online: false,
-        score: 0
+        score: 0,
     };
+
+    let keysPressed = {};
 
     let player = new Player();
 
@@ -54,29 +57,25 @@ document.addEventListener("DOMContentLoaded", () => {
         mainMenu.style.display = "none";
         document.getElementById("game-container").style.display = "block";
 
-        // the player's controls
+        // Change the player's HP based on the difficulty chosen
+        
+
+        // the player's controls assisted by https://www.gavsblog.com/blog/detect-single-and-multiple-keypress-events-javascript
         window.addEventListener('keydown', event => {
-            if (event.key === "ArrowLeft") {
-                player.x -= player.speed;
-            }
-            else if (event.key === "ArrowRight") {
-                player.x += player.speed;
-            }
-            if (event.key === "ArrowUp") {
-                player.y -= player.speed;
-            }
-            else if (event.key === "ArrowDown") {
-                player.y += player.speed;
-            }
+            keysPressed[event.key] = true;
         });
+        window.addEventListener('keyup', event => {
+            delete keysPressed[event.key];
+        });
+        
         animate();
     }
 
     let animate = () => {
         requestAnimationFrame(animate);
         context.clearRect(0, 0, canvas.width, canvas.height);
-        player.update();
-
+        player.update(keysPressed);
+        
         updateUI(player);
     }
 

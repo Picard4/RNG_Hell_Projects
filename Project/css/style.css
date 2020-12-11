@@ -40,6 +40,7 @@ button:hover {
     display: none;
 }
 #game {
+    /* Assisted by https://css-tricks.com/snippets/css/complete-guide-grid/ */
     display: grid;
     grid-template-areas: 
     "game-stat canvas canvas canvas canvas player-stat"
