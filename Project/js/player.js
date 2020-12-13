@@ -63,6 +63,9 @@ class Player {
         if (keysPressed.ArrowRight === true){
             this.x += this.speed;
         }
+        if (keysPressed.z === true){
+            this.warp();
+        }
     }
 
     healOrDamage(valueToChangeHP) {
@@ -85,6 +88,12 @@ class Player {
     oneHitKnockout() {
         // this method is called when I feel like OHKOing the player :)
         this.hp = 0;
+    }
+
+    warp(){
+        this.x = (Math.random() * (canvas.width - this.width * 2)) + this.width;
+        this.y = (Math.random() * (canvas.height - this.height * 2)) + this.height;
+        this.hp--;
     }
 
     evaluateWallCollision() {

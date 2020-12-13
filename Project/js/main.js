@@ -3,10 +3,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // constants for the Canvas
     const canvas = document.getElementsByTagName('canvas')[0];
     const context = canvas.getContext('2d');
-    
 
-    canvas.height = 700; 
-    canvas.width = 1200; 
+
+    canvas.height = 700;
+    canvas.width = 1200;
 
     // variables pertaining to the game itself
     let gameStatus = {
@@ -14,10 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
         online: false,
         score: 0,
     };
+    let player;
+    let enemies;
 
+    const numberOfEnemies = 20;
     let keysPressed = {};
-
-    let player = new Player();
 
     // Get the HTML elements for the menu
     let startButton = document.getElementById("start-button");
@@ -36,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let changeDifficulty = () => {
         // choose easy mode or normal mode
-        if (normalMode.checked){
+        if (normalMode.checked) {
             gameStatus.easyMode = false;
         }
         else {
@@ -44,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // choose online mode or offline mode
-        if (onlineMode.checked){
+        if (onlineMode.checked) {
             gameStatus.online = true;
         }
         else {
@@ -57,9 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
         mainMenu.style.display = "none";
         document.getElementById("game-container").style.display = "block";
 
-        // Change the player's HP based on the difficulty chosen
-        
-
         // the player's controls assisted by https://www.gavsblog.com/blog/detect-single-and-multiple-keypress-events-javascript
         window.addEventListener('keydown', event => {
             keysPressed[event.key] = true;
@@ -67,16 +65,38 @@ document.addEventListener("DOMContentLoaded", () => {
         window.addEventListener('keyup', event => {
             delete keysPressed[event.key];
         });
-        
+        fillCanvas();
+    }
+
+    let fillCanvas = () => {
+        player = new Player();
+        enemies = [];
+        for (let i = 0; i < numberOfEnemies; i++) {
+            enemies.push(new Enemy);
+        }
         animate();
     }
 
     let animate = () => {
-        requestAnimationFrame(animate);
+        let animationId = requestAnimationFrame(animate);
         context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // update game elements
         player.update(keysPressed);
-        
+        enemies.forEach(enemy => {
+            enemy.update();
+        });
+
         updateUI(player);
+
+        // assisted by https://developer.mozilla.org/en-US/docs/Web/API/Window/cancelAnimationFrame
+        if (player.hp <= 0) {
+            cancelAnimationFrame(animationId);
+            // This sound was taken from https://www.youtube.com/watch?v=jEexefuB62c
+            var gameOverSound = new Audio("../assets/ExplosionMeme.mp4");
+            gameOverSound.play();
+            endGame();
+        }
     }
 
     let updateUI = player => {
