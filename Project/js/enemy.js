@@ -4,14 +4,15 @@ const enemyRadius = 10;
 
 
 class Enemy {
-    constructor() {
+    constructor(x) {
         /* Attributes for drawing */
-        // The enemy's starting location will be random
-        this.x = canvas.width / 2;
-        this.y = canvas.height / 2;
         this.width = enemySide;
         this.height = enemySide
         this.radius = enemyRadius;
+
+        // The enemy's starting location will be random
+        this.x = x;
+        this.y = (Math.random() * (canvas.height - this.height * 2)) + this.height;
     }
 
     draw() {

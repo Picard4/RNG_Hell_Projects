@@ -5,7 +5,7 @@ const playerSide = 50;
 const playerRadius = 10;
 
 class Player {
-    constructor() {
+    constructor(hp, luck) {
         /* Attributes for drawing */
         // The player will always spawn in the center
         this.x = canvas.width / 2;
@@ -16,7 +16,8 @@ class Player {
         this.innerCircleColor = "green";
 
         /* Attributes for gameplay */
-        this.hp = 10;
+        this.hp = hp;
+        this.luck = luck;
         this.startingHP = this.hp;
         this.speed = 5;
     }
@@ -50,24 +51,24 @@ class Player {
         this.draw();
     }
 
-    move(keysPressed){
-        if (keysPressed.ArrowUp === true){
+    // This moves the player and increases the amount of spaces they moved
+    move(keysPressed) {
+        if (keysPressed.ArrowUp === true) {
             this.y -= this.speed;
         }
-        if (keysPressed.ArrowDown === true){
+        if (keysPressed.ArrowDown === true) {
             this.y += this.speed;
         }
-        if (keysPressed.ArrowLeft === true){
+        if (keysPressed.ArrowLeft === true) {
             this.x -= this.speed;
         }
-        if (keysPressed.ArrowRight === true){
+        if (keysPressed.ArrowRight === true) {
             this.x += this.speed;
-        }
-        if (keysPressed.z === true){
-            this.warp();
         }
     }
 
+    // This function damages the player based on the value sent
+    // Even though you can't heal in game, I made the function capable of healing the player
     healOrDamage(valueToChangeHP) {
         this.hp += valueToChangeHP;
 
@@ -83,19 +84,32 @@ class Player {
         else {
             this.innerCircleColor = "green";
         }
+
+        if (valueToChangeHP < 0) {
+            // the player is getting damaged
+            // sound effect taken from https://www.youtube.com/watch?v=17ahNDRc14w
+            var playerHitSound = new Audio("../assets/AirHorn.mp4");
+            playerHitSound.play();
+        }
     }
 
-    oneHitKnockout() {
-        // this method is called when I feel like OHKOing the player :)
-        this.hp = 0;
+    // this method is called when I feel like trying to OHKO the player :)
+    attemptToInstaKill(chanceOfInstaKill) {
+        // A higher luck stat could help to prevent an OHKO
+        // assisted by https://www.w3schools.com/jsref/jsref_random.asp
+        let potentialInstaKill = Math.floor((Math.random() * (chanceOfInstaKill * this.luck)));
+        if (potentialInstaKill == 0){
+            this.hp = 0;
+        }
     }
 
-    warp(){
+    // the player can warp whenever they want
+    warp() {
         this.x = (Math.random() * (canvas.width - this.width * 2)) + this.width;
         this.y = (Math.random() * (canvas.height - this.height * 2)) + this.height;
-        this.hp--;
     }
 
+    // the player can't go through walls
     evaluateWallCollision() {
         //Vertical checks
         let upWallCheck = this.y - this.height / 2 <= 0;

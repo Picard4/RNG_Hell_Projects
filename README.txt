@@ -28,5 +28,5 @@ Status effects upon getting hit? Random moving, damage for moving unless you war
 
 Add sound effects and maybe music. 
 https://www.youtube.com/watch?v=jEexefuB62c (Player death)
-https://www.youtube.com/watch?v=2Tt04ZSlbZ0 (if the player is hit)
+https://www.youtube.com/watch?v=17ahNDRc14w (if the player is hit)
 https://www.youtube.com/watch?v=3fVfRPADqtE (unsure about implementation as of now)
