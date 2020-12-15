@@ -35,6 +35,9 @@ button:hover {
     display: flex;
     flex-direction: column;
 }
+#game-title {
+    text-align: center;
+}
 /* Game CSS */
 #game-container {
     display: none;

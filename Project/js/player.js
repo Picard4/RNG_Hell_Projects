@@ -90,6 +90,7 @@ class Player {
             // sound effect taken from https://www.youtube.com/watch?v=17ahNDRc14w
             var playerHitSound = new Audio("../assets/AirHorn.mp4");
             playerHitSound.play();
+            playerHitSound.currentTime=0;
         }
     }
 

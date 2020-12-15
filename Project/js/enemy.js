@@ -1,6 +1,6 @@
 'use strict';
-const enemySide = 50;
-const enemyRadius = 10;
+const enemySide = 30;
+const enemyRadius = 6;
 
 
 class Enemy {
