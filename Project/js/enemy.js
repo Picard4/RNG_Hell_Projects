@@ -2,7 +2,6 @@
 const enemySide = 30;
 const enemyRadius = 6;
 
-
 class Enemy {
     constructor(x, player) {
         /* Attributes for drawing */
@@ -42,8 +41,8 @@ class Enemy {
     }
 
     confirmPlayerCollision(player){
-        let checkXIntersection = player.x - player.width / 2 <= this.x + this.width && player.x + player.width / 2 >= this.x - this.width;
-        let checkYIntersection = player.y - player.height / 2 <= this.y + this.height && player.y + player.height / 2 >= this.y - this.height;
+        let checkXIntersection = player.x - player.width / 2 <= this.x + this.width / 2 && player.x + player.width / 2 >= this.x - this.width / 2;
+        let checkYIntersection = player.y - player.height / 2 <= this.y + this.height / 2 && player.y + player.height / 2 >= this.y - this.height / 2;
         if (checkXIntersection && checkYIntersection){
             return true;
         }

@@ -1,5 +1,5 @@
 'use strict';
-const itemSide = 30;
+const itemSide = 20;
 
 class Item {
     constructor(y, player) {
@@ -36,7 +36,11 @@ class Item {
         context.restore();
     }
 
-    update() {
+    update(player) {
+        if (this.confirmPlayerCollision(player)){
+            this.changePlayerLuck();
+            this.x = despawnZone;
+        }
         this.draw();
     }
 
@@ -47,6 +51,10 @@ class Item {
             return true;
         }
         return false;
+    }
+
+    changePlayerLuck(){
+
     }
 }
 

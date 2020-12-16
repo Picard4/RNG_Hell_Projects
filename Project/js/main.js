@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         for (let i = 0; i < numberOfStartingObstacles; i++) {
-            obstacles.push(new Obstacle("darkred", player));
+            obstacles.push(new Obstacle(true, player));
         }
 
         let nextItemY = 50;
@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // update game elements
             player.update(keysPressed);
             items.forEach(item => {
-                item.update();
+                item.update(player);
             })
             enemies.forEach(enemy => {
                 enemy.update(player, messages);
@@ -207,6 +207,9 @@ document.addEventListener("DOMContentLoaded", () => {
             })
 
             updateUI(player);
+            /*items = items.filter(item => {
+                item.x == despawnZone;
+            }) */
 
             // assisted by https://developer.mozilla.org/en-US/docs/Web/API/Window/cancelAnimationFrame
             if (player.hp <= 0 || gameStatus.enemiesRemoved >= numberOfEnemies) {

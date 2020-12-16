@@ -1,6 +1,11 @@
 'use strict';
+
+// Constants related to the entire game
 const canvas = document.getElementsByTagName('canvas')[0];
 const context = canvas.getContext('2d');
+const despawnZone = 9001;
+
+ // Player constants
 const playerSide = 40;
 const playerRadius = 8;
 
