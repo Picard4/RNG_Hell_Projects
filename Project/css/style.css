@@ -35,7 +35,7 @@ button:hover {
     display: flex;
     flex-direction: column;
 }
-#game-title {
+.screen-title {
     text-align: center;
 }
 /* Game CSS */
@@ -90,4 +90,16 @@ canvas {
 /* Game Over CSS */
 #game-over {
     display: none;
+    flex-direction: column;
+    align-items: center;
+}
+#restart-buttons{
+    display: flex;
+    justify-content: center;
+}
+.restart-option{
+    margin: 1em;
+}
+#game-over-message-container{
+    text-align: center;
 }

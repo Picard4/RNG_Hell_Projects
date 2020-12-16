@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Get the HTML elements for the menu
     let startButton = document.getElementById("start-button");
     let mainMenu = document.getElementById("main-menu");
-    let gameOver = document.getElementById("game-over");
+    let gameOverScreen = document.getElementById("game-over");
     let gameContainer = document.getElementById("game-container");
 
     // mode selection
@@ -58,11 +58,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // game over event listeners 
     document.getElementById("retry").addEventListener("click", () => {
+        gameOverScreen.removeChild(document.getElementById("game-over-message-container"));
         startGame();
     });
     document.getElementById("ragequit").addEventListener("click", () => {
-        gameOver.style.display = "none";
-        mainMenu.style.display = "inline-block";
+        gameOverScreen.removeChild(document.getElementById("game-over-message-container"));
+        gameOverScreen.style.display = "none";
+        mainMenu.style.display = "flex";
     });
 
     let changeDifficulty = () => {
@@ -86,13 +88,15 @@ document.addEventListener("DOMContentLoaded", () => {
     let startGame = () => {
         // Display the canvas + UI and hide the main menu
         mainMenu.style.display = "none";
-        gameOver.style.display = "none";
+        gameOverScreen.style.display = "none";
         gameContainer.style.display = "block";
 
-        // reset the gameStatus
+        // reset the gameStatus and messages
         gameStatus.score = 0;
         gameStatus.enemiesRemoved = 0;
         gameStatus.secondsPassed = 0;
+        messages.gameOver = [];
+        messages.lastAttack = "";
 
         // the player's controls assisted by https://www.gavsblog.com/blog/detect-single-and-multiple-keypress-events-javascript
         window.addEventListener('keydown', event => {
@@ -106,8 +110,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // assisted by https://stackoverflow.com/questions/3369593/how-to-detect-escape-key-press-with-pure-js-or-jquery
             if (event.key == "Escape") {
+                if (player.hp !== 0){
+                    messages.gameOver.push("You died early as requested. Are you happy?");
+                }
                 player.hp = 0;
-                messages.gameOver.push("You died early as requested. Are you happy?");
             }
         });
         window.addEventListener('keyup', event => {
@@ -227,8 +233,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let endGame = () => {
         gameContainer.style.display = "none";
-        gameOver.style.display = "block";
+        gameOverScreen.style.display = "flex";
 
+        // determine the player's final results
+        if (gameStatus.enemiesRemoved >= numberOfEnemies){
+            document.getElementById("game-over-title").innerHTML = "YOU WON!?";
+        }
+        else {
+            document.getElementById("game-over-title").innerHTML = "GAME OVER!";
+        }
+
+        // create the game over message container
+        // game over message container setup assisted by https://www.codegrepper.com/code-examples/html/add+and+remove+field+in+html+elements+dynamically+with+javascript and https://www.w3schools.com/jsref/met_node_insertadjacenthtml.asp
+        let gameOverMessageContainer = document.createElement("div");
+        document.getElementById("game-over-title").insertAdjacentElement("afterend", gameOverMessageContainer);
+        gameOverMessageContainer.id = "game-over-message-container";
+
+        // add all messages collected to the game over screen
+        messages.gameOver.forEach(gameOverMessageText =>{
+            let gameOverMessage = document.createElement("p");
+            gameOverMessage.innerHTML = gameOverMessageText;
+            document.getElementById("game-over-message-container").appendChild(gameOverMessage);
+        });
     }
 });
 

@@ -1,8 +1,8 @@
 'use strict';
 const canvas = document.getElementsByTagName('canvas')[0];
 const context = canvas.getContext('2d');
-const playerSide = 50;
-const playerRadius = 10;
+const playerSide = 40;
+const playerRadius = 8;
 
 class Player {
     constructor(hp, luck) {
