@@ -137,19 +137,22 @@ document.addEventListener("DOMContentLoaded", () => {
         obstacles = [];
         items = [];
 
-        let nextEnemyX = playerRadius;
+        let nextEnemyX = 40;
         let enemyXIncrement = 60;
         for (let i = 0; i < numberOfEnemies; i++) {
-            enemies.push(new Enemy(nextEnemyX));
+            enemies.push(new Enemy(nextEnemyX, player));
             nextEnemyX += enemyXIncrement
         }
 
         for (let i = 0; i < numberOfStartingObstacles; i++) {
-            obstacles.push(new Obstacle("darkred"));
+            obstacles.push(new Obstacle("darkred", player));
         }
 
+        let nextItemY = 50;
+        let itemYIncrement = 300;
         for (let i = 0; i < numberOfItems; i++) {
-            items.push(new Item());
+            items.push(new Item(nextItemY, player));
+            nextItemY += itemYIncrement;
         }
 
         // start counting every second the game passes... and potentially remove some score if the player is unlucky
@@ -193,20 +196,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // update game elements
             player.update(keysPressed);
-            enemies.forEach(enemy => {
-                enemy.update();
-            });
-            obstacles.forEach(obstacle => {
-                obstacle.update();
-            })
             items.forEach(item => {
                 item.update();
+            })
+            enemies.forEach(enemy => {
+                enemy.update(player, messages);
+            });
+            obstacles.forEach(obstacle => {
+                obstacle.update(player, messages);
             })
 
             updateUI(player);
 
             // assisted by https://developer.mozilla.org/en-US/docs/Web/API/Window/cancelAnimationFrame
-            if (player.hp <= 0) {
+            if (player.hp <= 0 || gameStatus.enemiesRemoved >= numberOfEnemies) {
                 cancelAnimationFrame(animationId);
                 // assisted by https://www.w3schools.com/jsref/met_win_clearinterval.asp
                 clearInterval(timer);

@@ -4,14 +4,20 @@ const swapDirection = -1;
 
 // This class reuses a lot of code from Assignment 4 Question 3
 class Obstacle {
-    constructor(colour) {
+    constructor(colour, player) {
         this.radius = obstacleRadius;
         this.horizontalDirection = this.randomizeDirectionToBePositiveOrNegative();
         this.verticalDirection = this.randomizeDirectionToBePositiveOrNegative();
-        this.speed = 5;
+        this.speed = 4;
         this.colour = colour;
-        this.x = Math.floor((Math.random() * (canvas.width - this.radius * 2)) + this.radius);
-        this.y = Math.floor((Math.random() * (canvas.width - this.radius * 2)) + this.radius);
+
+        // Do not let an obstacle spawn on the player
+        // assisted by https://www.w3schools.com/jsref/jsref_dowhile.asp
+        do {
+            this.x = Math.floor((Math.random() * (canvas.width - this.radius * 2)) + this.radius);
+            this.y = Math.floor((Math.random() * (canvas.height - this.radius * 2)) + this.radius);
+        }
+        while (this.confirmPlayerCollisionWhenSpawning(player));
     }
 
     draw() {
@@ -26,21 +32,32 @@ class Obstacle {
         context.restore();
     }
 
-    update() {
+    update(player, messages) {
         this.x += this.horizontalDirection * this.speed;
         this.y += this.verticalDirection * this.speed;
         this.evaluateWallCollision();
         this.draw();
     }
 
-    randomizeDirectionToBePositiveOrNegative(){
+    randomizeDirectionToBePositiveOrNegative() {
         let randomDirection = Math.floor((Math.random() * 2));
-        if (randomDirection == 1){
+        if (randomDirection == 1) {
             return 1;
         }
         else {
             return -1;
         }
+    }
+
+    // This function confirms if the obstacle spawned in the player's square
+    // Hit detection normally works based on the player's circle for obstacles, but I wanted to be a bit more fair (for once)
+    confirmPlayerCollisionWhenSpawning(player) {
+        let checkXIntersection = player.x - player.width / 2 <= this.x + this.radius && player.x + player.width / 2 >= this.x - this.radius
+        let checkYIntersection = player.y - player.height / 2 <= this.y + this.radius && player.y + player.height / 2 >= this.y - this.radius
+        if (checkXIntersection && checkYIntersection) {
+            return true;
+        }
+        return false;
     }
 
     evaluateWallCollision() {

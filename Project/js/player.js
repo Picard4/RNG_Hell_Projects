@@ -90,21 +90,25 @@ class Player {
             // sound effect taken from https://www.youtube.com/watch?v=17ahNDRc14w
             var playerHitSound = new Audio("../assets/AirHorn.mp4");
             playerHitSound.play();
-            playerHitSound.currentTime=0;
+            playerHitSound.currentTime = 0;
         }
     }
 
     // this method is called when I feel like trying to OHKO the player :)
-    attemptToInstaKill(chanceOfInstaKill) {
+    attemptToInstaKill(chanceOfInstaKill, messages) {
         // A higher luck stat could help to prevent an OHKO
         // assisted by https://www.w3schools.com/jsref/jsref_random.asp
-        let potentialInstaKill = Math.floor((Math.random() * (chanceOfInstaKill * this.luck)));
-        if (potentialInstaKill == 0){
-            this.hp = 0;
+        if (this.hp > 0) {
+            let potentialInstaKill = Math.floor((Math.random() * (chanceOfInstaKill * this.luck)));
+            if (potentialInstaKill == 0) {
+                this.hp = 0;
+                messages.gameOver.push("Congratulations you were somehow OHKOed n00b");
+            }
         }
     }
 
-    // the player can warp whenever they want
+    // the player can warp whenever they want or when they're hit
+    // Warping intentionally has no collision checking to allow for the player to get comboed
     warp() {
         this.x = (Math.random() * (canvas.width - this.width * 2)) + this.width;
         this.y = (Math.random() * (canvas.height - this.height * 2)) + this.height;
