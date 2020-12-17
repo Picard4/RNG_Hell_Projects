@@ -1,15 +1,20 @@
 'use strict';
 const enemySide = 30;
 const enemyRadius = 6;
+const fakeDespawnZone = 9001;
 
 class Enemy {
-    constructor(x, player) {
+    constructor(x, player, value) {
         /* Attributes for drawing */
         this.width = enemySide;
         this.height = enemySide
         this.radius = enemyRadius;
         this.damage = -1;
         this.active = true;
+        this.value = value;
+
+        // We need to know if the enemy is rolling back to avoid glitches
+        this.rollingBack = false;
 
         // The enemy's Y axis will be random, but the X is hard coded to stop clusters of enemies from making the game easy
         this.x = x;
@@ -41,10 +46,45 @@ class Enemy {
         context.restore();
     }
 
-    confirmPlayerCollision(player){
+    // The function for when an enemy is considered defeated. Will it stay down, or will it roll back?
+    defeat(gameStatus) {
+        let rollbackRange = 2;
+        let rollbackChance = Math.floor(Math.random() * rollbackRange);
+
+        if (rollbackChance === 0 && gameStatus.online === true){
+            this.rollback(gameStatus);
+        }
+        else {
+            this.active = false;
+            gameStatus.score += this.value;
+            gameStatus.enemiesRemoved++;
+        }
+    }
+
+    // Trick the player into thinking they beat an enemy and then bring it back after some time
+    rollback(gameStatus) {
+        // Send the enemy to the fake despawn zone and update the gameStatus to give the appearance that they're gone
+        gameStatus.score += this.value;
+        gameStatus.enemiesRemoved++;
+        let oldY = this.y;
+        this.y = fakeDespawnZone;
+        this.rollingBack = true;
+
+        setTimeout(() => {
+            if (this.rollingBack === true) {
+                // The enemy was not defeated, after all. Roll back! :)
+                this.y = oldY;
+                gameStatus.score -= this.value;
+                gameStatus.enemiesRemoved--;
+                this.rollingBack = false;
+            }
+        }, 3000)
+    }
+
+    confirmPlayerCollision(player) {
         let checkXIntersection = player.x - player.width / 2 <= this.x + this.width / 2 && player.x + player.width / 2 >= this.x - this.width / 2;
         let checkYIntersection = player.y - player.height / 2 <= this.y + this.height / 2 && player.y + player.height / 2 >= this.y - this.height / 2;
-        if (checkXIntersection && checkYIntersection){
+        if (checkXIntersection && checkYIntersection) {
             return true;
         }
         return false;
@@ -52,7 +92,7 @@ class Enemy {
 
     update(player, messages) {
         this.draw();
-        if (this.confirmPlayerCollision(player)){
+        if (this.confirmPlayerCollision(player)) {
             player.healOrDamage(this.damage);
             player.attemptToInstaKill(player.hp, messages);
             player.warp();

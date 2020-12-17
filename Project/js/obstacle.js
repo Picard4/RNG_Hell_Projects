@@ -8,7 +8,9 @@ class Obstacle {
         this.radius = obstacleRadius;
         this.horizontalDirection = this.randomizeDirectionToBePositiveOrNegative();
         this.verticalDirection = this.randomizeDirectionToBePositiveOrNegative();
-        this.speed = 4;
+
+        // give the obstacles a random speed to reduce the odds of them sticking together
+        this.speed = (Math.floor(Math.random() * 8) + 1);
 
         // Determines if the obstacle is trying to kill the player or the enemies
         this.opposingPlayer = opposingPlayer;
@@ -42,17 +44,22 @@ class Obstacle {
         context.restore();
     }
 
-    update(obstacles, player, messages) {
+    update(obstacles, player, enemies, gameStatus, messages) {
         this.x += this.horizontalDirection * this.speed;
         this.y += this.verticalDirection * this.speed;
         this.evaluateWallCollision();
+
+        // Only red (opposing) obstacles should be able to harm the player
         if (this.confirmPlayerCollision(player) && this.opposingPlayer === true) {
             player.healOrDamage(this.damage);
             player.attemptToInstaKill(player.hp, messages);
             player.warp();
         }
-        if (this.opposingPlayer === false){
+
+        // Only blue (supporting) obstacles should be able to harm enemies and swap allegiances
+        if (this.opposingPlayer === false) {
             this.evaluateOpposingObstacleCollision(obstacles);
+            this.evaluateEnemyCollision(enemies, gameStatus);
         }
         this.draw();
     }
@@ -83,11 +90,31 @@ class Obstacle {
         let checkXIntersection = player.x - player.radius <= this.x + this.radius && player.x + player.radius >= this.x - this.radius;
         let checkYIntersection = player.y - player.radius <= this.y + this.radius && player.y + player.radius >= this.y - this.radius;
 
-        // Only red (opposing) obstacles should be able to harm the player
-        if (checkXIntersection && checkYIntersection /*&& this.opposingPlayer === true*/) {
+        if (checkXIntersection && checkYIntersection) {
             return true;
         }
         return false;
+    }
+
+    // Check if any obstacles that support the player hit an enemy's circle
+    evaluateEnemyCollision(enemies, gameStatus) {
+        enemies.forEach(enemy => {
+            let checkXIntersection = enemy.x - enemy.radius <= this.x + this.radius && enemy.x + enemy.radius >= this.x - this.radius;
+            let checkYIntersection = enemy.y - enemy.radius <= this.y + this.radius && enemy.y + enemy.radius >= this.y - this.radius;
+            
+            // calculate hit chance
+            let luckyHitRange = 2;
+            let luckyHit = Math.floor(Math.random() * luckyHitRange);
+
+            if (checkXIntersection && checkYIntersection && luckyHit === 0){
+                // The enemy was hit. They are defeated
+                enemy.defeat(gameStatus);
+            }
+            if (checkXIntersection && checkYIntersection && luckyHit !== 0){
+                // The attack missed, so it shall be corrupted into an enemy obstacle
+                this.changeAllegiance();
+            }
+        });
     }
 
     evaluateOpposingObstacleCollision(obstacles) {
@@ -95,7 +122,7 @@ class Obstacle {
             let checkXIntersection = obstacle.x - obstacle.radius <= this.x + this.radius && obstacle.x + obstacle.radius >= this.x - this.radius;
             let checkYIntersection = obstacle.y - obstacle.radius <= this.y + this.radius && obstacle.y + obstacle.radius >= this.y - this.radius;
             let checkOpposition = this.opposingPlayer !== obstacle.opposingPlayer;
-            if (checkXIntersection && checkYIntersection && checkOpposition){
+            if (checkXIntersection && checkYIntersection && checkOpposition) {
                 this.changeAllegiance();
             }
         });

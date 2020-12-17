@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // variables pertaining to the game itself
     let gameStatus = {
+        running: false,
         easyMode: false,
         online: false,
         score: 0,
@@ -28,11 +29,12 @@ document.addEventListener("DOMContentLoaded", () => {
     let enemies;
     let obstacles;
     let items;
-    
+
 
     const numberOfEnemies = 20;
     const numberOfStartingObstacles = 10;
     const numberOfItems = 3;
+    const enemyValue = 100;
 
     // variables for functionality
     let keysPressed = {};
@@ -49,6 +51,48 @@ document.addEventListener("DOMContentLoaded", () => {
     // mode selection
     let normalMode = document.getElementById("normal-mode");
     let onlineMode = document.getElementById("online-mode");
+
+    // the player's controls assisted by https://www.gavsblog.com/blog/detect-single-and-multiple-keypress-events-javascript
+    window.addEventListener('keydown', event => {
+        // Movement can work without confirming the gameStatus since it only workes when updating the player
+        // Action controls work without updating the player, so they must only work when the game is running
+        keysPressed[event.key] = true;
+        if (gameStatus.running === true) {
+
+            // controls other than moving
+            if (event.key == "z") {
+                player.warp();
+                player.attemptToInstaKill(player.hp);
+            }
+            if (event.key == "w") {
+                // Up attack
+                attack(false, false);
+            }
+            if (event.key == "a") {
+                // Left attack
+                attack(true, false);
+            }
+            if (event.key == "s") {
+                // Down attack
+                attack(false, true);
+            }
+            if (event.key == "d") {
+                // Right attack
+                attack(true, true);
+            }
+
+            // assisted by https://stackoverflow.com/questions/3369593/how-to-detect-escape-key-press-with-pure-js-or-jquery
+            if (event.key == "Escape") {
+                if (player.hp !== 0) {
+                    messages.gameOver.push("You died early as requested. Are you happy?");
+                }
+                player.hp = 0;
+            }
+        }
+    });
+    window.addEventListener('keyup', event => {
+        delete keysPressed[event.key];
+    });
 
     // Wait for the user to start the game
     startButton.addEventListener("click", event => {
@@ -99,30 +143,6 @@ document.addEventListener("DOMContentLoaded", () => {
         messages.gameOver = [];
         messages.lastAttack = "";
 
-        // the player's controls assisted by https://www.gavsblog.com/blog/detect-single-and-multiple-keypress-events-javascript
-        window.addEventListener('keydown', event => {
-            keysPressed[event.key] = true;
-
-            // controls other than moving
-            if (event.key == "z") {
-                player.warp();
-                player.attemptToInstaKill(player.hp);
-            }
-            if (event.key == "w") {
-                obstacles.push(new Obstacle(false, player));
-            }
-
-            // assisted by https://stackoverflow.com/questions/3369593/how-to-detect-escape-key-press-with-pure-js-or-jquery
-            if (event.key == "Escape") {
-                if (player.hp !== 0){
-                    messages.gameOver.push("You died early as requested. Are you happy?");
-                }
-                player.hp = 0;
-            }
-        });
-        window.addEventListener('keyup', event => {
-            delete keysPressed[event.key];
-        });
         fillCanvas();
     }
 
@@ -144,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let nextEnemyX = 40;
         let enemyXIncrement = 60;
         for (let i = 0; i < numberOfEnemies; i++) {
-            enemies.push(new Enemy(nextEnemyX, player));
+            enemies.push(new Enemy(nextEnemyX, player, enemyValue));
             nextEnemyX += enemyXIncrement
         }
 
@@ -169,15 +189,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 gameStatus.score--;
             }
         }, 1000);
+        gameStatus.running = true;
         animate();
     }
 
-    let decideLag = () =>{
+    let decideLag = () => {
         let lag;
-        if (gameStatus.online){
+        if (gameStatus.online) {
             // decide how much to lag for this frame
             lag = Math.floor(Math.random() * maxLag);
-            if (lag == 0){
+            if (lag == 0) {
                 // No proper frame rates allowed in my onine mode! >:(
                 // Kill the player for having good luck
                 player.hp = 0;
@@ -193,7 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let animate = () => {
         let lag = decideLag();
-        
+
         setTimeout(() => {
             let animationId = requestAnimationFrame(animate);
             context.clearRect(0, 0, canvas.width, canvas.height);
@@ -207,10 +228,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 enemy.update(player, messages);
             });
             obstacles.forEach(obstacle => {
-                obstacle.update(obstacles, player, messages);
+                obstacle.update(obstacles, player, enemies, gameStatus, messages);
             })
 
-            updateUI(player); 
+            updateUI(player);
 
             // Filter inactive game elements
             // Assisted by https://www.w3schools.com/jsref/jsref_filter.asp
@@ -222,7 +243,9 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             // assisted by https://developer.mozilla.org/en-US/docs/Web/API/Window/cancelAnimationFrame
-            if (player.hp <= 0 || gameStatus.enemiesRemoved >= numberOfEnemies) {
+            // The enemy array must be empty for a win to count. 
+            // The count of enemies defeated can't determine a win due to the rollback system
+            if (player.hp <= 0 || enemies.length == 0) {
                 cancelAnimationFrame(animationId);
                 // assisted by https://www.w3schools.com/jsref/met_win_clearinterval.asp
                 clearInterval(timer);
@@ -233,6 +256,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 endGame();
             }
         }, lag);
+    }
+
+    let attack = (horizontal, positive) => {
+        messages.lastAttack = "Range";
+        obstacles.push(new Obstacle(false, player));
     }
 
     let updateUI = player => {
@@ -250,9 +278,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let endGame = () => {
         gameContainer.style.display = "none";
         gameOverScreen.style.display = "flex";
+        gameStatus.running = false;
 
         // determine the player's final results
-        if (gameStatus.enemiesRemoved >= numberOfEnemies){
+        if (gameStatus.enemiesRemoved >= numberOfEnemies) {
             document.getElementById("game-over-title").innerHTML = "YOU WON!?";
         }
         else {
@@ -266,7 +295,7 @@ document.addEventListener("DOMContentLoaded", () => {
         gameOverMessageContainer.id = "game-over-message-container";
 
         // add all messages collected to the game over screen
-        messages.gameOver.forEach(gameOverMessageText =>{
+        messages.gameOver.forEach(gameOverMessageText => {
             let gameOverMessage = document.createElement("p");
             gameOverMessage.innerHTML = gameOverMessageText;
             document.getElementById("game-over-message-container").appendChild(gameOverMessage);
