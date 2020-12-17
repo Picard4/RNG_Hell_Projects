@@ -5,6 +5,7 @@ class Item {
     constructor(y, player) {
         this.width = itemSide;
         this.height = itemSide;
+        this.active = true;
 
         this.y = y;
         do {
@@ -38,8 +39,8 @@ class Item {
 
     update(player) {
         if (this.confirmPlayerCollision(player)){
-            this.changePlayerLuck();
-            this.x = despawnZone;
+            this.changePlayerLuck(player);
+            this.active = false;
         }
         this.draw();
     }
@@ -53,8 +54,15 @@ class Item {
         return false;
     }
 
-    changePlayerLuck(){
-
+    changePlayerLuck(player){
+        let luckChangeRange = 3;
+        let potentialLuckBuff =  Math.floor(Math.random() * luckChangeRange);
+        if (potentialLuckBuff == 0){
+            player.luck++;
+        }
+        else if (player.luck > 0) {
+            player.luck--;
+        }
     }
 }
 

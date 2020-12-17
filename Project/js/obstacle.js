@@ -12,8 +12,8 @@ class Obstacle {
 
         // Determines if the obstacle is trying to kill the player or the enemies
         this.opposingPlayer = opposingPlayer;
-        
-        if (opposingPlayer == true){
+
+        if (opposingPlayer == true) {
             this.colour = "darkred";
         }
         else {
@@ -42,14 +42,17 @@ class Obstacle {
         context.restore();
     }
 
-    update(player, messages) {
+    update(obstacles, player, messages) {
         this.x += this.horizontalDirection * this.speed;
         this.y += this.verticalDirection * this.speed;
         this.evaluateWallCollision();
-        if (this.confirmPlayerCollision(player)) {
-            player.attemptToInstaKill(player.hp, messages);
+        if (this.confirmPlayerCollision(player) && this.opposingPlayer === true) {
             player.healOrDamage(this.damage);
+            player.attemptToInstaKill(player.hp, messages);
             player.warp();
+        }
+        if (this.opposingPlayer === false){
+            this.evaluateOpposingObstacleCollision(obstacles);
         }
         this.draw();
     }
@@ -67,8 +70,8 @@ class Obstacle {
     // This function confirms if the obstacle spawned in the player's square
     // Hit detection normally works based on the player's circle for obstacles, but I wanted to be a bit more fair (for once)
     confirmPlayerCollisionWhenSpawning(player) {
-        let checkXIntersection = player.x - player.width / 2 <= this.x + this.radius && player.x + player.width / 2 >= this.x - this.radius
-        let checkYIntersection = player.y - player.height / 2 <= this.y + this.radius && player.y + player.height / 2 >= this.y - this.radius
+        let checkXIntersection = player.x - player.width / 2 <= this.x + this.radius && player.x + player.width / 2 >= this.x - this.radius;
+        let checkYIntersection = player.y - player.height / 2 <= this.y + this.radius && player.y + player.height / 2 >= this.y - this.radius;
         if (checkXIntersection && checkYIntersection) {
             return true;
         }
@@ -77,20 +80,31 @@ class Obstacle {
 
     // This is the normal player collision check. Intersections only count if they collide with the player's circle
     confirmPlayerCollision(player) {
-        let checkXIntersection = player.x - player.radius <= this.x + this.radius && player.x + player.radius >= this.x - this.radius
-        let checkYIntersection = player.y - player.radius <= this.y + this.radius && player.y + player.radius >= this.y - this.radius
-        
+        let checkXIntersection = player.x - player.radius <= this.x + this.radius && player.x + player.radius >= this.x - this.radius;
+        let checkYIntersection = player.y - player.radius <= this.y + this.radius && player.y + player.radius >= this.y - this.radius;
+
         // Only red (opposing) obstacles should be able to harm the player
-        if (checkXIntersection && checkYIntersection && this.opposingPlayer === true) {
+        if (checkXIntersection && checkYIntersection /*&& this.opposingPlayer === true*/) {
             return true;
         }
         return false;
     }
 
-    changeAllegiance(){
-        if (this.opposingPlayer == true){
+    evaluateOpposingObstacleCollision(obstacles) {
+        obstacles.forEach(obstacle => {
+            let checkXIntersection = obstacle.x - obstacle.radius <= this.x + this.radius && obstacle.x + obstacle.radius >= this.x - this.radius;
+            let checkYIntersection = obstacle.y - obstacle.radius <= this.y + this.radius && obstacle.y + obstacle.radius >= this.y - this.radius;
+            let checkOpposition = this.opposingPlayer !== obstacle.opposingPlayer;
+            if (checkXIntersection && checkYIntersection && checkOpposition){
+                this.changeAllegiance();
+            }
+        });
+    }
+
+    changeAllegiance() {
+        if (this.opposingPlayer == true) {
             this.opposingPlayer = false;
-            this.colour = "green";
+            this.colour = "blue";
         }
         else {
             this.opposingPlayer = true;

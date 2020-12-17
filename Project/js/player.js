@@ -3,7 +3,6 @@
 // Constants related to the entire game
 const canvas = document.getElementsByTagName('canvas')[0];
 const context = canvas.getContext('2d');
-const despawnZone = 9001;
 
  // Player constants
 const playerSide = 40;
@@ -25,6 +24,7 @@ class Player {
         this.luck = luck;
         this.startingHP = this.hp;
         this.speed = 5;
+        this.shield = false;
     }
 
     draw() {

@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let enemies;
     let obstacles;
     let items;
+    
 
     const numberOfEnemies = 20;
     const numberOfStartingObstacles = 10;
@@ -107,6 +108,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 player.warp();
                 player.attemptToInstaKill(player.hp);
             }
+            if (event.key == "w") {
+                obstacles.push(new Obstacle(false, player));
+            }
 
             // assisted by https://stackoverflow.com/questions/3369593/how-to-detect-escape-key-press-with-pure-js-or-jquery
             if (event.key == "Escape") {
@@ -126,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
         if (gameStatus.easyMode) {
             // Easy mode starting stats
-            player = new Player(20, 2);
+            player = new Player(20, 3);
         }
         else {
             // Normal mode starting stats
@@ -203,13 +207,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 enemy.update(player, messages);
             });
             obstacles.forEach(obstacle => {
-                obstacle.update(player, messages);
+                obstacle.update(obstacles, player, messages);
             })
 
-            updateUI(player);
-            /*items = items.filter(item => {
-                item.x == despawnZone;
-            }) */
+            updateUI(player); 
+
+            // Filter inactive game elements
+            // Assisted by https://www.w3schools.com/jsref/jsref_filter.asp
+            items = items.filter(item => {
+                return item.active === true;
+            });
+            enemies = enemies.filter(enemy => {
+                return enemy.active === true;
+            });
 
             // assisted by https://developer.mozilla.org/en-US/docs/Web/API/Window/cancelAnimationFrame
             if (player.hp <= 0 || gameStatus.enemiesRemoved >= numberOfEnemies) {

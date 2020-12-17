@@ -9,6 +9,7 @@ class Enemy {
         this.height = enemySide
         this.radius = enemyRadius;
         this.damage = -1;
+        this.active = true;
 
         // The enemy's Y axis will be random, but the X is hard coded to stop clusters of enemies from making the game easy
         this.x = x;
@@ -52,8 +53,8 @@ class Enemy {
     update(player, messages) {
         this.draw();
         if (this.confirmPlayerCollision(player)){
-            player.attemptToInstaKill(player.hp, messages);
             player.healOrDamage(this.damage);
+            player.attemptToInstaKill(player.hp, messages);
             player.warp();
         }
     }
