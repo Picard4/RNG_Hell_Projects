@@ -44,6 +44,7 @@ class Obstacle {
         context.restore();
     }
 
+    // update the obstacle
     update(obstacles, player, enemies, gameStatus, messages) {
         this.x += this.horizontalDirection * this.speed;
         this.y += this.verticalDirection * this.speed;
@@ -64,6 +65,7 @@ class Obstacle {
         this.draw();
     }
 
+    // Only meant to be used when spawning
     randomizeDirectionToBePositiveOrNegative() {
         let randomDirection = Math.floor((Math.random() * 2));
         if (randomDirection == 1) {
@@ -90,7 +92,8 @@ class Obstacle {
         let checkXIntersection = player.x - player.radius <= this.x + this.radius && player.x + player.radius >= this.x - this.radius;
         let checkYIntersection = player.y - player.radius <= this.y + this.radius && player.y + player.radius >= this.y - this.radius;
 
-        if (checkXIntersection && checkYIntersection) {
+        // If the player has their shield active, they cannot be hit by obstacles
+        if (checkXIntersection && checkYIntersection && player.shield === false) {
             return true;
         }
         return false;
@@ -117,6 +120,8 @@ class Obstacle {
         });
     }
 
+    // If an obstacle is colliding with an opposing obstacle, it should change allegiance
+    // In the game, this is used to corrupt the player's obstacles into enemy obstacles but it can work both ways
     evaluateOpposingObstacleCollision(obstacles) {
         obstacles.forEach(obstacle => {
             let checkXIntersection = obstacle.x - obstacle.radius <= this.x + this.radius && obstacle.x + obstacle.radius >= this.x - this.radius;
@@ -128,6 +133,7 @@ class Obstacle {
         });
     }
 
+    // Change the obstacle's allegiance and design
     changeAllegiance() {
         if (this.opposingPlayer == true) {
             this.opposingPlayer = false;
@@ -139,6 +145,7 @@ class Obstacle {
         }
     }
 
+    // Obstacles bounce off of walls just like bubbles in assignment 4
     evaluateWallCollision() {
         //Horizontal checks
         let leftWallCheck = this.x <= this.radius && this.horizontalDirection < 0;

@@ -13,7 +13,7 @@ class Enemy {
         this.active = true;
         this.value = value;
 
-        // We need to know if the enemy is rolling back to avoid glitches
+        // We need to know if the enemy is rolling back to try to avoid glitches
         this.rollingBack = false;
 
         // The enemy's Y axis will be random, but the X is hard coded to stop clusters of enemies from making the game easy
@@ -46,18 +46,37 @@ class Enemy {
         context.restore();
     }
 
+    // update the enemy
+    update(player, messages) {
+        this.draw();
+        if (this.confirmPlayerCollision(player)) {
+            player.healOrDamage(this.damage);
+            player.attemptToInstaKill(player.hp, messages);
+            player.warp();
+        }
+    }
+
     // The function for when an enemy is considered defeated. Will it stay down, or will it roll back?
     defeat(gameStatus) {
-        let rollbackRange = 2;
-        let rollbackChance = Math.floor(Math.random() * rollbackRange);
+        // Enemies cannot be double killed... just in case something happens
+        if (this.active == true) {
+            let rollbackRange = 2;
+            let rollbackChance = Math.floor(Math.random() * rollbackRange);
 
-        if (rollbackChance === 0 && gameStatus.online === true){
-            this.rollback(gameStatus);
-        }
-        else {
-            this.active = false;
-            gameStatus.score += this.value;
-            gameStatus.enemiesRemoved++;
+            if (rollbackChance === 0 && gameStatus.online === true) {
+                this.rollback(gameStatus);
+            }
+            else {
+                this.active = false;
+                gameStatus.score += this.value;
+                gameStatus.enemiesRemoved++;
+            }
+
+            // Play defeat sound effect
+            // Sound effect taken from https://www.youtube.com/watch?v=Wy_euU-zeSg
+            var enemyDefeatedSound = new Audio("../assets/BassBoost.mp4");
+            enemyDefeatedSound.play();
+            enemyDefeatedSound.currentTime = 0;
         }
     }
 
@@ -81,6 +100,7 @@ class Enemy {
         }, 3000)
     }
 
+    // confirm if the player is colliding with this enemy (square hitboxes only)
     confirmPlayerCollision(player) {
         let checkXIntersection = player.x - player.width / 2 <= this.x + this.width / 2 && player.x + player.width / 2 >= this.x - this.width / 2;
         let checkYIntersection = player.y - player.height / 2 <= this.y + this.height / 2 && player.y + player.height / 2 >= this.y - this.height / 2;
@@ -88,15 +108,6 @@ class Enemy {
             return true;
         }
         return false;
-    }
-
-    update(player, messages) {
-        this.draw();
-        if (this.confirmPlayerCollision(player)) {
-            player.healOrDamage(this.damage);
-            player.attemptToInstaKill(player.hp, messages);
-            player.warp();
-        }
     }
 }
 

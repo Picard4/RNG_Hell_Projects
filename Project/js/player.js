@@ -4,9 +4,12 @@
 const canvas = document.getElementsByTagName('canvas')[0];
 const context = canvas.getContext('2d');
 
- // Player constants
+// Player constants
 const playerSide = 40;
 const playerRadius = 8;
+const playerSpeed = 5;
+const playerRecoilDamage = -1;
+const playerShieldFrameDuration = 200;
 
 class Player {
     constructor(hp, luck) {
@@ -23,13 +26,16 @@ class Player {
         this.hp = hp;
         this.luck = luck;
         this.startingHP = this.hp;
-        this.speed = 5;
+        this.speed = playerSpeed;
+        this.recoilDamage = playerRecoilDamage;
+        this.activeShieldFrames = 0;
+        this.maxActiveShieldFrames = playerShieldFrameDuration;
         this.shield = false;
     }
 
     draw() {
         // the player will be a square with a circle in the center. 
-        // the circle changes colour based on HP, while the square changes colour based on their status
+        // the circle changes colour based on HP and whether the shield is active or not
         context.save();
         context.translate(this.x, this.y); //translate the canvas to the player's position
 
@@ -50,9 +56,13 @@ class Player {
         context.restore();
     }
 
+    // Update the player each frame
     update(keysPressed) {
         this.move(keysPressed);
         this.evaluateWallCollision();
+        if (this.shield === true){
+            this.checkActiveShieldFrames();
+        }
         this.draw();
     }
 
@@ -77,7 +87,21 @@ class Player {
     healOrDamage(valueToChangeHP) {
         this.hp += valueToChangeHP;
 
-        /* Change the inner circle's colour to reflect the player's health */
+        if (this.shield === false) {
+            this.changeInnerCircleColour();
+        }
+
+        if (valueToChangeHP < 0) {
+            // the player is getting damaged
+            // sound effect taken from https://www.youtube.com/watch?v=17ahNDRc14w
+            var playerHitSound = new Audio("../assets/AirHorn.mp4");
+            playerHitSound.play();
+            playerHitSound.currentTime = 0;
+        }
+    }
+
+    /* Change the inner circle's colour to reflect the player's health if they lack a shield */
+    changeInnerCircleColour() {
         let thirdHp = this.startingHP / 3;
         let twoThirdHp = thirdHp * 2;
         if (this.hp < thirdHp) {
@@ -88,14 +112,6 @@ class Player {
         }
         else {
             this.innerCircleColor = "green";
-        }
-
-        if (valueToChangeHP < 0) {
-            // the player is getting damaged
-            // sound effect taken from https://www.youtube.com/watch?v=17ahNDRc14w
-            var playerHitSound = new Audio("../assets/AirHorn.mp4");
-            playerHitSound.play();
-            playerHitSound.currentTime = 0;
         }
     }
 
@@ -117,6 +133,24 @@ class Player {
     warp() {
         this.x = (Math.random() * (canvas.width - this.width * 2)) + this.width;
         this.y = (Math.random() * (canvas.height - this.height * 2)) + this.height;
+    }
+
+    // Give the player a shield and change their design to match their shield
+    gainShield() {
+        this.shield = true;
+        this.innerCircleColor = "blue";
+        // If the player gets a shield while they already have a shield, the active frame timer is reset
+        this.activeShieldFrames = 0;
+    }
+
+    // Increment the active shield frames and deactivate the shield if its been active for its full duration
+    checkActiveShieldFrames() {
+        this.activeShieldFrames++;
+        if (this.activeShieldFrames >= this.maxActiveShieldFrames){
+            // Deactivate the shield
+            this.shield = false;
+            this.changeInnerCircleColour();
+        }
     }
 
     // the player can't go through walls

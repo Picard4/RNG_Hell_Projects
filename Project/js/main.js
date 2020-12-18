@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let enemies;
     let obstacles;
     let items;
+    let meleeAttacks;
 
 
     const numberOfEnemies = 20;
@@ -40,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let keysPressed = {};
     let timer;
 
-    const maxLag = 251;
+    const maxLag = 301;
 
     // Get the HTML elements for the menu
     let startButton = document.getElementById("start-button");
@@ -62,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // controls other than moving
             if (event.key == "z") {
                 player.warp();
-                player.attemptToInstaKill(player.hp);
+                player.attemptToInstaKill(player.hp, messages);
             }
             if (event.key == "w") {
                 // Up attack
@@ -160,6 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
         enemies = [];
         obstacles = [];
         items = [];
+        meleeAttacks = [];
 
         let nextEnemyX = 40;
         let enemyXIncrement = 60;
@@ -220,6 +222,10 @@ document.addEventListener("DOMContentLoaded", () => {
             context.clearRect(0, 0, canvas.width, canvas.height);
 
             // update game elements
+            // Since melee attacks start where the player is, they are drawn first
+            meleeAttacks.forEach(meleeAttack => {
+                meleeAttack.update(enemies, items, gameStatus);
+            });
             player.update(keysPressed);
             items.forEach(item => {
                 item.update(player);
@@ -229,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             obstacles.forEach(obstacle => {
                 obstacle.update(obstacles, player, enemies, gameStatus, messages);
-            })
+            });
 
             updateUI(player);
 
@@ -241,6 +247,15 @@ document.addEventListener("DOMContentLoaded", () => {
             enemies = enemies.filter(enemy => {
                 return enemy.active === true;
             });
+            meleeAttacks = meleeAttacks.filter(meleeAttack => {
+                return meleeAttack.active === true;
+            });
+
+            // Patch code in case rollback glitches and unfairly docks points for an enemy that was legitimately deleted
+            while (gameStatus.enemiesRemoved < (numberOfEnemies - enemies.length)) {
+                gameStatus.enemiesRemoved++;
+                gameStatus.score += enemyValue;
+            }
 
             // assisted by https://developer.mozilla.org/en-US/docs/Web/API/Window/cancelAnimationFrame
             // The enemy array must be empty for a win to count. 
@@ -259,8 +274,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     let attack = (horizontal, positive) => {
-        messages.lastAttack = "Range";
-        obstacles.push(new Obstacle(false, player));
+        let attackSelectionRange = 30;
+        let maxValueForMelee = 10;
+        let maxValueForRange = 20;
+        let maxValueForShield = 25;
+        let randomAttackSelection = Math.floor(Math.random() * attackSelectionRange) + 1;
+
+        if (randomAttackSelection <= maxValueForMelee) {
+            messages.lastAttack = "Melee";
+            meleeAttacks.push(new MeleeAttack(player, horizontal, positive));
+        }
+        else if (randomAttackSelection <= maxValueForRange) {
+            messages.lastAttack = "Range";
+            obstacles.push(new Obstacle(false, player));
+        }
+        else if (randomAttackSelection <= maxValueForShield) {
+            messages.lastAttack = "Shield";
+            player.gainShield();
+        }
+        else {
+            messages.lastAttack = "rekt";
+            player.healOrDamage(player.recoilDamage);
+        }
     }
 
     let updateUI = player => {

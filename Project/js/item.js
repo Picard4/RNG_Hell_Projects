@@ -18,7 +18,7 @@ class Item {
         /* Code concerning the drawing of the item goes here. */
         // Code assisted by the Assignment 4 Exercise and https://www.w3schools.com/tags/canvas_lineto.asp
         context.save();
-        context.translate(this.x, this.y); 
+        context.translate(this.x, this.y);
         context.beginPath();
         context.fillStyle = "yellow";
         context.fillRect(0 - this.width / 2, 0 - this.height / 2, this.width, this.height);
@@ -37,32 +37,44 @@ class Item {
         context.restore();
     }
 
+    // Update the item
     update(player) {
-        if (this.confirmPlayerCollision(player)){
+        if (this.confirmPlayerCollision(player)) {
+            // The item has been collected
             this.changePlayerLuck(player);
-            this.active = false;
+            this.getRemoved();
         }
         this.draw();
     }
 
-    confirmPlayerCollision(player){
+    // Confirm if the player is colliding with the item (square hitboxes)
+    confirmPlayerCollision(player) {
         let checkXIntersection = player.x - player.width / 2 <= this.x + this.width && player.x + player.width / 2 >= this.x - this.width;
         let checkYIntersection = player.y - player.height / 2 <= this.y + this.height && player.y + player.height / 2 >= this.y - this.height;
-        if (checkXIntersection && checkYIntersection){
+        if (checkXIntersection && checkYIntersection) {
             return true;
         }
         return false;
     }
 
-    changePlayerLuck(player){
+    // Either increase or decrease the player's luck
+    changePlayerLuck(player) {
         let luckChangeRange = 3;
-        let potentialLuckBuff =  Math.floor(Math.random() * luckChangeRange);
-        if (potentialLuckBuff == 0){
+        let potentialLuckBuff = Math.floor(Math.random() * luckChangeRange);
+        if (potentialLuckBuff == 0) {
             player.luck++;
         }
         else if (player.luck > 0) {
             player.luck--;
         }
+    }
+
+    getRemoved() {
+        this.active = false;
+        // Sound taken from https://www.youtube.com/watch?v=2ZIpFytCSVc
+        var itemRemovedSound = new Audio("../assets/Bruh.mp4");
+        itemRemovedSound.play();
+        itemRemovedSound.currentTime = 0;
     }
 }
 
