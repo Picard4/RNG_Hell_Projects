@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
         easyMode: false,
         online: false,
         score: 0,
+        displayScore: true,
         enemiesRemoved: 0,
         secondsPassed: 0,
     };
@@ -36,6 +37,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const numberOfStartingObstacles = 10;
     const numberOfItems = 3;
     const enemyValue = 100;
+
+    // Normal mode starting stats
+    const normalHP = 15;
+    const normalLuck = 1;
+
+    const normalToEasyHPConversion = 2;
+    const normalToEasyLuckConversion = 3;
+
+    // Easy mode starting stats
+    const easyHP = normalHP * normalToEasyHPConversion;
+    const easyLuck = normalLuck * normalToEasyLuckConversion;
 
     // variables for functionality
     let keysPressed = {};
@@ -61,31 +73,33 @@ document.addEventListener("DOMContentLoaded", () => {
         if (gameStatus.running === true) {
 
             // controls other than moving
-            if (event.key == "z") {
+            if (event.key === " " || event.key === "z") {
                 player.warp();
                 player.attemptToInstaKill(player.hp, messages);
             }
-            if (event.key == "w") {
+            if (event.key === "w") {
                 // Up attack
                 attack(false, false);
             }
-            if (event.key == "a") {
+            if (event.key === "a") {
                 // Left attack
                 attack(true, false);
             }
-            if (event.key == "s") {
+            if (event.key === "s") {
                 // Down attack
                 attack(false, true);
             }
-            if (event.key == "d") {
+            if (event.key === "d") {
                 // Right attack
                 attack(true, true);
             }
 
             // assisted by https://stackoverflow.com/questions/3369593/how-to-detect-escape-key-press-with-pure-js-or-jquery
-            if (event.key == "Escape") {
+            if (event.key === "Escape") {
                 if (player.hp !== 0) {
                     messages.gameOver.push("You died early as requested. Are you happy?");
+                    // Do not display the player's score since they gave up
+                    gameStatus.displayScore = false;
                 }
                 player.hp = 0;
             }
@@ -141,6 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
         gameStatus.score = 0;
         gameStatus.enemiesRemoved = 0;
         gameStatus.secondsPassed = 0;
+        gameStatus.displayScore = true;
         messages.gameOver = [];
         messages.lastAttack = "";
 
@@ -150,12 +165,21 @@ document.addEventListener("DOMContentLoaded", () => {
     let fillCanvas = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
         if (gameStatus.easyMode) {
-            // Easy mode starting stats
-            player = new Player(30, 3);
+            player = new Player(easyHP, easyLuck);
         }
         else {
-            // Normal mode starting stats
-            player = new Player(15, 1);
+            player = new Player(normalHP, normalLuck);
+        }
+
+        // Try to Insta kill the player the before the game even starts
+        // The player's own insta kill method should not be called here since a unique message is added if the player dies here
+        let rangeOfStartingGameInstaKill = 4;
+        let potentialStartingGameInstaKill = Math.floor((Math.random() * (rangeOfStartingGameInstaKill * player.luck)));
+        if (potentialStartingGameInstaKill === 0) {
+            player.hp = 0;
+            messages.gameOver.push("I can't believe you lost before the game even started.");
+            // Do not display the player's score since the game never started
+            gameStatus.displayScore = false;
         }
 
         enemies = [];
@@ -187,9 +211,13 @@ document.addEventListener("DOMContentLoaded", () => {
             gameStatus.secondsPassed++;
             // A luck stat of 1 or less will always lead to lost score
             let potentialScoreLoss = Math.floor((Math.random() * player.luck));
-            if (potentialScoreLoss == 0) {
+            if (potentialScoreLoss === 0) {
                 gameStatus.score--;
             }
+
+            // Try to OHKO the player each second
+            let rangeOfInstaKillEverySecond = 100;
+            player.attemptToInstaKill(rangeOfInstaKillEverySecond, messages);
         }, 1000);
         gameStatus.running = true;
         animate();
@@ -205,6 +233,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Kill the player for having good luck
                 player.hp = 0;
                 messages.gameOver.push("A communication error has occurred");
+
+                // Do not display the player's score since they "disconnected". Delete it instead :)
+                gameStatus.score = 0;
+                gameStatus.displayScore = false;
             }
         }
         else {
@@ -315,13 +347,56 @@ document.addEventListener("DOMContentLoaded", () => {
         gameOverScreen.style.display = "flex";
         gameStatus.running = false;
 
+        if (gameStatus.displayScore === true) {
+            // Attempt to delete the player's score
+            let scoreDeletionRange = 2;
+            let potentialScoreDeletion = Math.floor((Math.random() * (scoreDeletionRange * player.luck)));
+            if (potentialScoreDeletion === 0) {
+                // delete the player's score
+                gameStatus.score = 0;
+                messages.gameOver.push("Your score was randomly deleted. Have a nice day!");
+                gameStatus.displayScore = false;
+            }
+        }
+
+        buildGameOverScreen();
+    }
+
+    let buildGameOverScreen = () => {
+        let playerVictory = false;
+
         // determine the player's final results
-        if (gameStatus.enemiesRemoved >= numberOfEnemies) {
+        if (gameStatus.enemiesRemoved >= numberOfEnemies && gameStatus.displayScore === true) {
+            playerVictory = true;
             document.getElementById("game-over-title").innerHTML = "YOU WON!?";
+
+            // raise the player's score based on how much HP they had left
+            let oldScore = gameStatus.score;
+            let extraScore;
+            if (gameStatus.easyMode === true) {
+                extraScore = enemyValue * (player.hp / normalToEasyHPConversion);
+            }
+            else {
+                extraScore = enemyValue * player.hp;
+            }
+            gameStatus.score += extraScore;
+            messages.gameOver.push("You ended the game with " + oldScore + " points, but you got " + extraScore + " extra points for having " + player.hp + " HP left over.");
         }
         else {
             document.getElementById("game-over-title").innerHTML = "GAME OVER!";
         }
+
+        // Add some messages explaining how the game went if the player kept their score
+        if (gameStatus.displayScore === true) {
+            messages.gameOver.push("Your final score is " + gameStatus.score);
+            if (gameStatus.score < 0) {
+                messages.gameOver.push("You managed to get a negative score!? That's pretty cringe.");
+            }
+        }
+
+        // Comment on the player's accomplishments or lack thereof
+
+        messages.gameOver.push("Please select one of the below options or throw your computer out a window.");
 
         // create the game over message container
         // game over message container setup assisted by https://www.codegrepper.com/code-examples/html/add+and+remove+field+in+html+elements+dynamically+with+javascript and https://www.w3schools.com/jsref/met_node_insertadjacenthtml.asp

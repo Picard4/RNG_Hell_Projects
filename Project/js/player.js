@@ -121,7 +121,7 @@ class Player {
         // assisted by https://www.w3schools.com/jsref/jsref_random.asp
         if (this.hp > 0) {
             let potentialInstaKill = Math.floor((Math.random() * (chanceOfInstaKill * this.luck)));
-            if (potentialInstaKill == 0) {
+            if (potentialInstaKill === 0) {
                 this.hp = 0;
                 messages.gameOver.push("Congratulations you were somehow OHKOed n00b");
             }
