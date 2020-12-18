@@ -59,15 +59,15 @@ class MeleeAttack {
         }
     }
 
-    // Melee attacks disappear upon hitting walls
+    // Melee attacks disappear upon hitting walls, but they should be able to glide along them
     evaluateWallCollision() {
         //Vertical checks
-        let upWallCheck = this.y - this.height / 2 <= 0;
-        let downWallCheck = this.y + this.height / 2 >= canvas.height;
+        let upWallCheck = this.y - this.height / 2 < 0;
+        let downWallCheck = this.y + this.height / 2 > canvas.height;
 
         // Horizontal checks
-        let leftWallCheck = this.x - this.width / 2 <= 0;
-        let rightWallCheck = this.x + this.width / 2 >= canvas.width;
+        let leftWallCheck = this.x - this.width / 2 < 0;
+        let rightWallCheck = this.x + this.width / 2 > canvas.width;
 
         if (upWallCheck || downWallCheck || leftWallCheck || rightWallCheck) {
             this.active = false;

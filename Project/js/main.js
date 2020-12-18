@@ -151,11 +151,11 @@ document.addEventListener("DOMContentLoaded", () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
         if (gameStatus.easyMode) {
             // Easy mode starting stats
-            player = new Player(20, 3);
+            player = new Player(30, 3);
         }
         else {
             // Normal mode starting stats
-            player = new Player(10, 1);
+            player = new Player(15, 1);
         }
 
         enemies = [];
@@ -274,10 +274,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     let attack = (horizontal, positive) => {
-        let attackSelectionRange = 30;
-        let maxValueForMelee = 10;
-        let maxValueForRange = 20;
-        let maxValueForShield = 25;
+        let attackSelectionRange = 50;
+        let maxValueForMelee = 25;
+        let maxValueForRange = 40;
+        let maxValueForShield = 45;
         let randomAttackSelection = Math.floor(Math.random() * attackSelectionRange) + 1;
 
         if (randomAttackSelection <= maxValueForMelee) {
