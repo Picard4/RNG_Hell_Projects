@@ -20,6 +20,12 @@ class Obstacle {
         }
         else {
             this.colour = "blue";
+            
+            // Play a sound effect if the obstacle is supporting the player
+            // sound taken from https://www.youtube.com/watch?v=qZC5gtOw3DU
+            var rangeAttackSound = new Audio("../assets/sounds/Ding.mp4");
+            rangeAttackSound.play();
+            rangeAttackSound.currentTime = 0;
         }
         this.damage = -1;
 

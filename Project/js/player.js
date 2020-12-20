@@ -137,6 +137,11 @@ class Player {
 
     // Give the player a shield and change their design to match their shield
     gainShield() {
+        // sound effect taken from https://www.youtube.com/watch?v=rDfrfnZge2s
+        var shieldGetSound = new Audio("../assets/sounds/Pingas.mp4");
+        shieldGetSound.play();
+        shieldGetSound.currentTime = 0;
+
         this.shield = true;
         this.innerCircleColor = "blue";
         // If the player gets a shield while they already have a shield, the active frame timer is reset

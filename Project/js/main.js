@@ -333,10 +333,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 cancelAnimationFrame(animationId);
                 // assisted by https://www.w3schools.com/jsref/met_win_clearinterval.asp
                 clearInterval(timer);
-                // This sound was taken from https://www.youtube.com/watch?v=jEexefuB62c
-                var gameOverSound = new Audio("../assets/sounds/ExplosionMeme.mp4");
-                gameOverSound.play();
-                gameOverSound.currentTime = 0;
                 endGame();
             }
         }, lag);
@@ -404,6 +400,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // determine the player's final results
         if (gameStatus.enemiesRemoved >= numberOfEnemies && gameStatus.displayScore === true && player.hp > 0) {
+            // This sound was taken from https://www.youtube.com/watch?v=rgysEK_EBHM
+            var victorySound = new Audio("../assets/sounds/Stonks.mp4");
+            victorySound.play();
+            victorySound.currentTime = 0;
+
             playerVictory = true;
             gameOverTitle.innerHTML = "YOU WON!?";
 
@@ -420,6 +421,10 @@ document.addEventListener("DOMContentLoaded", () => {
             messages.gameOver.push("You ended the game with " + oldScore + " points, but you got " + extraScore + " extra points for having " + player.hp + " HP left over.");
         }
         else {
+            // This sound was taken from https://www.youtube.com/watch?v=jEexefuB62c
+            var gameOverSound = new Audio("../assets/sounds/ExplosionMeme.mp4");
+            gameOverSound.play();
+            gameOverSound.currentTime = 0;
             gameOverTitle.innerHTML = "GAME OVER!";
         }
 

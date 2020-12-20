@@ -25,6 +25,11 @@ class MeleeAttack {
         this.active = true;
         this.activeFrames = 0;
         this.maxActiveFrames = meleeAttackFrameDuration;
+
+        // sound taken from https://www.youtube.com/watch?v=3fVfRPADqtE
+        var meleeAttackSound = new Audio("../assets/sounds/Hitmarker.mp4");
+        meleeAttackSound.play();
+        meleeAttackSound.currentTime = 0;
     }
 
 
