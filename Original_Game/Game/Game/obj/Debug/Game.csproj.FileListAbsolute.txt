@@ -11,3 +11,10 @@ F:\JohnAbbottProgramming\Game\Game\obj\Debug\Game.csprojAssemblyReference.cache
 F:\JohnAbbottProgramming\Game\Game\obj\Debug\Game.csproj.CoreCompileInputs.cache
 F:\JohnAbbottProgramming\Game\Game\obj\Debug\Game.exe
 F:\JohnAbbottProgramming\Game\Game\obj\Debug\Game.pdb
+F:\Semester 3\Web Programming 1\RNG_HELL\3W5_DiMarco_P\Original_Game\Game\Game\bin\Debug\Game.exe.config
+F:\Semester 3\Web Programming 1\RNG_HELL\3W5_DiMarco_P\Original_Game\Game\Game\bin\Debug\Game.exe
+F:\Semester 3\Web Programming 1\RNG_HELL\3W5_DiMarco_P\Original_Game\Game\Game\bin\Debug\Game.pdb
+F:\Semester 3\Web Programming 1\RNG_HELL\3W5_DiMarco_P\Original_Game\Game\Game\obj\Debug\Game.csprojAssemblyReference.cache
+F:\Semester 3\Web Programming 1\RNG_HELL\3W5_DiMarco_P\Original_Game\Game\Game\obj\Debug\Game.csproj.CoreCompileInputs.cache
+F:\Semester 3\Web Programming 1\RNG_HELL\3W5_DiMarco_P\Original_Game\Game\Game\obj\Debug\Game.exe
+F:\Semester 3\Web Programming 1\RNG_HELL\3W5_DiMarco_P\Original_Game\Game\Game\obj\Debug\Game.pdb

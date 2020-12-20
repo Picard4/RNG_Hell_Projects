@@ -9,7 +9,7 @@ const playerSide = 40;
 const playerRadius = 8;
 const playerSpeed = 5;
 const playerRecoilDamage = -1;
-const playerShieldFrameDuration = 200;
+const playerShieldFrameDuration = 100;
 
 class Player {
     constructor(hp, luck) {
@@ -94,7 +94,7 @@ class Player {
         if (valueToChangeHP < 0) {
             // the player is getting damaged
             // sound effect taken from https://www.youtube.com/watch?v=17ahNDRc14w
-            var playerHitSound = new Audio("../assets/AirHorn.mp4");
+            var playerHitSound = new Audio("../assets/sounds/AirHorn.mp4");
             playerHitSound.play();
             playerHitSound.currentTime = 0;
         }

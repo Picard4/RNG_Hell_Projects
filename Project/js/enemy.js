@@ -74,7 +74,7 @@ class Enemy {
 
             // Play defeat sound effect
             // Sound effect taken from https://www.youtube.com/watch?v=Wy_euU-zeSg
-            var enemyDefeatedSound = new Audio("../assets/BassBoost.mp4");
+            var enemyDefeatedSound = new Audio("../assets/sounds/BassBoost.mp4");
             enemyDefeatedSound.play();
             enemyDefeatedSound.currentTime = 0;
         }

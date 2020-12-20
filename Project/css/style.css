@@ -1,4 +1,4 @@
-* {
+body {
     /* Color gotten from https://www.w3schools.com/colors/colors_shades.asp */
     background-color: #D00000;
 }
@@ -37,6 +37,17 @@ button:hover {
     flex-direction: column;
 }
 .screen-title {
+    text-align: center;
+}
+.tutorial-image {
+    /* assisted by https://www.w3schools.com/css/css3_images.asp */
+    height: 20px;
+    width: 20px;
+}
+#instructions {
+    display: none;
+}
+.instruction{
     text-align: center;
 }
 /* Game CSS */

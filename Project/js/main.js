@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
         displayScore: true,
         enemiesRemoved: 0,
         secondsPassed: 0,
+        chungusActive: false,
     };
 
     // variables to tell the player about various circumstances
@@ -60,6 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let mainMenu = document.getElementById("main-menu");
     let gameOverScreen = document.getElementById("game-over");
     let gameContainer = document.getElementById("game-container");
+    let instructions = document.getElementById("instructions");
+    let gameOverTitle = document.getElementById("game-over-title");
 
     // mode selection
     let normalMode = document.getElementById("normal-mode");
@@ -109,8 +112,20 @@ document.addEventListener("DOMContentLoaded", () => {
         delete keysPressed[event.key];
     });
 
+    // Add an event listener for the instructions
+    document.getElementById("instruction-button").addEventListener("click", () => {
+        // assisted by https://stackoverflow.com/questions/18324507/not-able-to-change-div-display-property-using-javascript
+        if (instructions.style.display !== "block") {
+            instructions.style.display = "block";
+        }
+        else {
+            instructions.style.display = "none";
+        }
+    });
+
     // Wait for the user to start the game
     startButton.addEventListener("click", event => {
+        instructions.style.display = "none";
         event.preventDefault();
         changeDifficulty();
         startGame();
@@ -118,13 +133,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // game over event listeners 
     document.getElementById("retry").addEventListener("click", () => {
-        gameOverScreen.removeChild(document.getElementById("game-over-message-container"));
-        startGame();
+        // block the retry if bigChungusHecc is active
+        if (gameStatus.chungusActive === false) {
+            // attempt to unleash bigChungusHecc instead of staring the game
+            let bigChungusHeccRange = 100;
+            let bigChungusHeccChance = Math.floor((Math.random() * bigChungusHeccRange));
+            if (bigChungusHeccChance === 0) {
+                prepareBigChungusHecc();
+            }
+            else {
+                gameOverScreen.removeChild(document.getElementById("game-over-message-container"));
+                startGame();
+            }
+        }
     });
     document.getElementById("ragequit").addEventListener("click", () => {
-        gameOverScreen.removeChild(document.getElementById("game-over-message-container"));
-        gameOverScreen.style.display = "none";
-        mainMenu.style.display = "flex";
+        // block the ragequit if bigChungusHecc is active
+        if (gameStatus.chungusActive === false) {
+            // attempt to unleash bigChungusHecc instead of going to the main menu
+            let bigChungusHeccRange = 100;
+            let bigChungusHeccChance = Math.floor((Math.random() * bigChungusHeccRange));
+            if (bigChungusHeccChance === 0) {
+                prepareBigChungusHecc();
+            }
+            else {
+                gameOverScreen.removeChild(document.getElementById("game-over-message-container"));
+                gameOverScreen.style.display = "none";
+                mainMenu.style.display = "flex";
+            }
+        }
     });
 
     let changeDifficulty = () => {
@@ -297,7 +334,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // assisted by https://www.w3schools.com/jsref/met_win_clearinterval.asp
                 clearInterval(timer);
                 // This sound was taken from https://www.youtube.com/watch?v=jEexefuB62c
-                var gameOverSound = new Audio("../assets/ExplosionMeme.mp4");
+                var gameOverSound = new Audio("../assets/sounds/ExplosionMeme.mp4");
                 gameOverSound.play();
                 gameOverSound.currentTime = 0;
                 endGame();
@@ -366,9 +403,9 @@ document.addEventListener("DOMContentLoaded", () => {
         let playerVictory = false;
 
         // determine the player's final results
-        if (gameStatus.enemiesRemoved >= numberOfEnemies && gameStatus.displayScore === true) {
+        if (gameStatus.enemiesRemoved >= numberOfEnemies && gameStatus.displayScore === true && player.hp > 0) {
             playerVictory = true;
-            document.getElementById("game-over-title").innerHTML = "YOU WON!?";
+            gameOverTitle.innerHTML = "YOU WON!?";
 
             // raise the player's score based on how much HP they had left
             let oldScore = gameStatus.score;
@@ -383,25 +420,47 @@ document.addEventListener("DOMContentLoaded", () => {
             messages.gameOver.push("You ended the game with " + oldScore + " points, but you got " + extraScore + " extra points for having " + player.hp + " HP left over.");
         }
         else {
-            document.getElementById("game-over-title").innerHTML = "GAME OVER!";
+            gameOverTitle.innerHTML = "GAME OVER!";
         }
 
         // Add some messages explaining how the game went if the player kept their score
         if (gameStatus.displayScore === true) {
-            messages.gameOver.push("Your final score is " + gameStatus.score);
+            // Display the score
+            messages.gameOver.push("Your score is " + gameStatus.score);
+
+            // Victory messages
+            if (playerVictory === true) {
+                if (gameStatus.easyMode === true) {
+                    // easy mode victory message (online and offline)
+                    messages.gameOver.push("You won, but you were on easy mode. Git gud and play on Normal next time.");
+                }
+                else if (gameStatus.online === false) {
+                    // normal mode offline victory message
+                    messages.gameOver.push("You were lucky enough to survive normal? Try taking your skills online for the ultimate experience...");
+                }
+                else {
+                    // normal mode online victory message (the hardest mode in the game)
+                    messages.gameOver.push("How in the RNG Hell did you survive online mode on normal!? You're either really lucky, or you're one of those tryhards who uses ethernet.");
+                }
+            }
+
+            // messages to mock the player for having a negative score
             if (gameStatus.score < 0) {
-                messages.gameOver.push("You managed to get a negative score!? That's pretty cringe.");
+                if (playerVictory === true) {
+                    messages.gameOver.push("You somehow managed to win with a negative score!? You've truly reached an unprecedented level of cringe.");
+                }
+                else {
+                    messages.gameOver.push("You got a negative score? That's pretty cringe.");
+                }
             }
         }
-
-        // Comment on the player's accomplishments or lack thereof
 
         messages.gameOver.push("Please select one of the below options or throw your computer out a window.");
 
         // create the game over message container
         // game over message container setup assisted by https://www.codegrepper.com/code-examples/html/add+and+remove+field+in+html+elements+dynamically+with+javascript and https://www.w3schools.com/jsref/met_node_insertadjacenthtml.asp
         let gameOverMessageContainer = document.createElement("div");
-        document.getElementById("game-over-title").insertAdjacentElement("afterend", gameOverMessageContainer);
+        gameOverTitle.insertAdjacentElement("afterend", gameOverMessageContainer);
         gameOverMessageContainer.id = "game-over-message-container";
 
         // add all messages collected to the game over screen
@@ -410,6 +469,50 @@ document.addEventListener("DOMContentLoaded", () => {
             gameOverMessage.innerHTML = gameOverMessageText;
             document.getElementById("game-over-message-container").appendChild(gameOverMessage);
         });
+    }
+
+    // this function prepares to unleash Big Chungus upon RNG HELL Online
+    let prepareBigChungusHecc = () => {
+        // Prepare to unleash the Chungus
+        gameStatus.chungusActive = true;
+        gameOverTitle.innerHTML = "WHOLESOME 100";
+
+        // assisted by https://www.w3schools.com/jsref/prop_style_background.asp
+        // Chungus received from https://www.pinterest.ca/pin/767863805194651696/
+        setTimeout(() => {
+            // begin to unleash the Chungus
+            document.body.style.background = "url('../assets/images/BigChungus.jpg')";
+            let chungusObserver = new IntersectionObserver(bigChungusHecc);
+            chungusObserver.observe(gameOverTitle);
+            chungusObserver.observe(gameOverScreen);
+        }, 1069);
+    }
+
+    // function lovingly named after the best Bash command
+    let bigChungusHecc = victims => {
+        setTimeout(() => {
+            let funniNumber = 42069;
+            victims.forEach(victim => {
+                if (victim.isIntersecting) {
+                    for (let chungusCount = 0; chungusCount < funniNumber; chungusCount++) {
+                        let bigChungus = document.createElement("img");
+                        bigChungus.src = "../assets/images/BigChungus.jpg";
+
+                        // decide randomly whether to prepend or append the next Big Chungus
+                        // assisted by https://developer.mozilla.org/en-US/docs/Web/API/ParentNode/prepend
+                        let chungusDirectionRange = 2;
+                        let chungusDirection = Math.floor((Math.random() * chungusDirectionRange));
+                        if (chungusDirection === 0){
+                            victim.target.prepend(bigChungus);
+                        }
+                        else {
+                            victim.target.append(bigChungus);
+                        }
+                    }
+                    // There is no unobserving. You cannot escape the Chungus.
+                }
+            });
+        }, 1069);
     }
 });
 

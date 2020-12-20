@@ -72,7 +72,7 @@ class Item {
     getRemoved() {
         this.active = false;
         // Sound taken from https://www.youtube.com/watch?v=2ZIpFytCSVc
-        var itemRemovedSound = new Audio("../assets/Bruh.mp4");
+        var itemRemovedSound = new Audio("../assets/sounds/Bruh.mp4");
         itemRemovedSound.play();
         itemRemovedSound.currentTime = 0;
     }
