@@ -1,6 +1,8 @@
 body {
     /* Color gotten from https://www.w3schools.com/colors/colors_shades.asp */
     background-color: #D00000;
+    /* Comic Sans assisted by https://stackoverflow.com/questions/21334839/applying-comic-sans-ms-font-style */
+    font-family: "Comic Sans MS", "Comic Sans";
 }
 
 /* Main Menu and General CSS */
@@ -88,6 +90,10 @@ canvas {
     align-items: center;
     border-style: dotted;
     text-align: center;
+}
+/* assisted by https://www.w3schools.com/cssref/css_selectors.asp */
+.statistic > h1 {
+    font-size: 1.8em;
 }
 .first-stat{
     grid-area: first-stat;

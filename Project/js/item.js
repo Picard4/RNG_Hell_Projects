@@ -1,4 +1,6 @@
 'use strict';
+
+// Item constant
 const itemSide = 20;
 
 class Item {

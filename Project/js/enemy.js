@@ -30,7 +30,7 @@ class Enemy {
     draw() {
         // the enemy will look just like the player, but they will be coloured differently and they'll be a bit smaller
         context.save();
-        context.translate(this.x, this.y); //translate the canvas to the enemy's position
+        context.translate(this.x, this.y);
 
 
         // The outer square

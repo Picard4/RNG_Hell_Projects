@@ -38,7 +38,7 @@ class Player {
         // the player will be a square with a circle in the center. 
         // the circle changes colour based on HP and whether the shield is active or not
         context.save();
-        context.translate(this.x, this.y); //translate the canvas to the player's position
+        context.translate(this.x, this.y); 
 
 
         // The outer square

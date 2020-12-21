@@ -1,6 +1,6 @@
 'use strict';
 
-// obstacle constants
+// Obstacle constants
 const obstacleRadius = 20;
 const swapDirection = -1;
 const obstacleSpeedRange = 8;
@@ -100,7 +100,7 @@ class Obstacle {
         return false;
     }
 
-    // This is the normal player collision check. Intersections only count if they collide with the player's circle
+    // This is the normal player collision check. Intersections only count if the obstacle collides with the player's circle
     confirmPlayerCollision(player) {
         let checkXIntersection = player.x - player.radius <= this.x + this.radius && player.x + player.radius >= this.x - this.radius;
         let checkYIntersection = player.y - player.radius <= this.y + this.radius && player.y + player.radius >= this.y - this.radius;
@@ -158,7 +158,7 @@ class Obstacle {
         }
     }
 
-    // Obstacles bounce off of walls just like bubbles in assignment 4
+    // Obstacles bounce off of walls just like bubbles in assignment 4 question 3
     evaluateWallCollision() {
         //Horizontal checks
         let leftWallCheck = this.x <= this.radius && this.horizontalDirection < 0;
