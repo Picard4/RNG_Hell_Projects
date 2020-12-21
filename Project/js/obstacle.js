@@ -1,32 +1,37 @@
 'use strict';
+
+// obstacle constants
 const obstacleRadius = 20;
 const swapDirection = -1;
+const obstacleSpeedRange = 8;
 
 // This class reuses a lot of code from Assignment 4 Question 3
 class Obstacle {
     constructor(opposingPlayer, player) {
         this.radius = obstacleRadius;
+
+        // movement attributes
         this.horizontalDirection = this.randomizeDirectionToBePositiveOrNegative();
         this.verticalDirection = this.randomizeDirectionToBePositiveOrNegative();
 
         // give the obstacles a random speed to reduce the odds of them sticking together
-        this.speed = (Math.floor(Math.random() * 8) + 1);
+        this.speed = (Math.floor(Math.random() * obstacleSpeedRange) + 1);
 
         // Determines if the obstacle is trying to kill the player or the enemies
         this.opposingPlayer = opposingPlayer;
-
-        if (opposingPlayer == true) {
+        if (opposingPlayer) {
             this.colour = "darkred";
         }
         else {
             this.colour = "blue";
             
-            // Play a sound effect if the obstacle is supporting the player
+            // Play a sound effect if the obstacle is a range attack from the player
             // sound taken from https://www.youtube.com/watch?v=qZC5gtOw3DU
             var rangeAttackSound = new Audio("../assets/sounds/Ding.mp4");
             rangeAttackSound.play();
             rangeAttackSound.currentTime = 0;
         }
+        
         this.damage = -1;
 
         // Do not let an obstacle spawn on the player
@@ -38,8 +43,9 @@ class Obstacle {
         while (this.confirmPlayerCollisionWhenSpawning(player));
     }
 
+    // draw the obstacle
     draw() {
-        /* Code concerning the drawing of the obstacle goes here. */
+        // obstacles will look like bubbles from Assignment 4 question 3, but with less complex colour changing
         context.save();
         context.beginPath();
         context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
@@ -57,24 +63,25 @@ class Obstacle {
         this.evaluateWallCollision();
 
         // Only red (opposing) obstacles should be able to harm the player
-        if (this.confirmPlayerCollision(player) && this.opposingPlayer === true) {
+        if (this.confirmPlayerCollision(player) && this.opposingPlayer) {
             player.healOrDamage(this.damage);
             player.attemptToInstaKill(player.hp, messages);
             player.warp();
         }
 
         // Only blue (supporting) obstacles should be able to harm enemies and swap allegiances
-        if (this.opposingPlayer === false) {
+        if (!this.opposingPlayer) {
             this.evaluateOpposingObstacleCollision(obstacles);
             this.evaluateEnemyCollision(enemies, gameStatus);
         }
         this.draw();
     }
 
-    // Only meant to be used when spawning
+    // Only meant to be used when spawning to have varying directions
     randomizeDirectionToBePositiveOrNegative() {
-        let randomDirection = Math.floor((Math.random() * 2));
-        if (randomDirection == 1) {
+        let randomDirectionRange = 2;
+        let randomDirection = Math.floor((Math.random() * randomDirectionRange));
+        if (randomDirection === 1) {
             return 1;
         }
         else {
@@ -99,7 +106,7 @@ class Obstacle {
         let checkYIntersection = player.y - player.radius <= this.y + this.radius && player.y + player.radius >= this.y - this.radius;
 
         // If the player has their shield active, they cannot be hit by obstacles
-        if (checkXIntersection && checkYIntersection && player.shield === false) {
+        if (checkXIntersection && checkYIntersection && !player.shield) {
             return true;
         }
         return false;
@@ -117,7 +124,7 @@ class Obstacle {
 
             if (checkXIntersection && checkYIntersection && luckyHit === 0){
                 // The enemy was hit. They are defeated
-                enemy.defeat(gameStatus);
+                enemy.getDefeated(gameStatus);
             }
             if (checkXIntersection && checkYIntersection && luckyHit !== 0){
                 // The attack missed, so it shall be corrupted into an enemy obstacle
@@ -141,7 +148,7 @@ class Obstacle {
 
     // Change the obstacle's allegiance and design
     changeAllegiance() {
-        if (this.opposingPlayer == true) {
+        if (this.opposingPlayer) {
             this.opposingPlayer = false;
             this.colour = "blue";
         }

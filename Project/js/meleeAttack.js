@@ -3,36 +3,39 @@
 // Melee attack constants
 const meleeAttackSide = 40;
 const meleeAttackSpeed = 8;
-
 const meleeAttackFrameDuration = 15;
 
 class MeleeAttack {
     constructor(player, horizontal, positive) {
+        // drawing attributes
         this.width = meleeAttackSide;
         this.height = meleeAttackSide;
         this.x = player.x;
         this.y = player.y;
 
+        // movement attributes
         this.speed = meleeAttackSpeed;
         this.horizontal = horizontal;
-        if (positive === true) {
+        if (positive) {
             this.direction = 1;
         }
         else {
             this.direction = -1;
         }
 
+        // gameplay attributes
         this.active = true;
         this.activeFrames = 0;
         this.maxActiveFrames = meleeAttackFrameDuration;
 
+        // Play a sound since the player unleashed a melee attack
         // sound taken from https://www.youtube.com/watch?v=3fVfRPADqtE
         var meleeAttackSound = new Audio("../assets/sounds/Hitmarker.mp4");
         meleeAttackSound.play();
         meleeAttackSound.currentTime = 0;
     }
 
-
+    // draw the Melee Attack
     draw() {
         // A melee attack will be a square without a circle, basically the inverse of an obstacle
         context.save();
@@ -44,7 +47,7 @@ class MeleeAttack {
 
     // Update the melee attack each frame
     update(enemies, items, gameStatus) {
-        if (this.horizontal === true) {
+        if (this.horizontal) {
             this.x += this.direction * this.speed;
         }
         else {
@@ -57,6 +60,7 @@ class MeleeAttack {
         this.draw();
     }
 
+    // increment the active frames and set up the melee attack for deletion if it has been active for its duration
     checkActiveFrames() {
         this.activeFrames++;
         if (this.activeFrames >= this.maxActiveFrames) {
@@ -79,6 +83,7 @@ class MeleeAttack {
         }
     }
 
+    // confirm collision with every item and destroy both the item and the melee attack if there is a collision
     evaluateItemCollision(items) {
         items.forEach(item => {
             let checkXIntersection = item.x - item.width / 2 <= this.x + this.width / 2 && item.x + item.width / 2 >= this.x - this.width / 2;
@@ -90,6 +95,7 @@ class MeleeAttack {
         });
     }
 
+    // confirm collision with every enemy. If a collision occurs, delete the melee attack and only delete the enemy if the attack hit
     evaluateEnemyCollision(enemies, gameStatus) {
         enemies.forEach(enemy => {
             let checkXIntersection = enemy.x - enemy.width / 2 <= this.x + this.width / 2 && enemy.x + enemy.width / 2 >= this.x - this.width / 2;
@@ -100,8 +106,8 @@ class MeleeAttack {
             let luckyHit = Math.floor(Math.random() * luckyHitRange);
 
             if (checkXIntersection && checkYIntersection && luckyHit === 0) {
-                // The enemy was hit. They are defeated
-                enemy.defeat(gameStatus);
+                // The enemy was hit. Get the enemy defeated and remove the melee attack
+                enemy.getDefeated(gameStatus);
                 this.active = false;
             }
             if (checkXIntersection && checkYIntersection && luckyHit !== 0) {

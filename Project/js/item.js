@@ -7,22 +7,28 @@ class Item {
         this.height = itemSide;
         this.active = true;
 
+        // Items should not spawn on the player. The y axis is hard coded while the x axis is random
         this.y = y;
         do {
-            this.x = (Math.random() * (canvas.height - this.width * 2)) + this.width;
+            this.x = (Math.random() * (canvas.width - this.width * 2)) + this.width;
         }
         while (this.confirmPlayerCollision(player));
     }
 
+    // draw the item
     draw() {
-        /* Code concerning the drawing of the item goes here. */
+        // The item will be a square with a + stroked inside to resemble the first game's + items
         // Code assisted by the Assignment 4 Exercise and https://www.w3schools.com/tags/canvas_lineto.asp
         context.save();
         context.translate(this.x, this.y);
+
+        // draw the square
         context.beginPath();
         context.fillStyle = "yellow";
         context.fillRect(0 - this.width / 2, 0 - this.height / 2, this.width, this.height);
         context.closePath();
+
+        // draw the + inside the square
         context.beginPath();
         context.strokeStyle = "red";
         context.moveTo(-this.width / 2, 0);
@@ -34,6 +40,7 @@ class Item {
         context.lineTo(0, this.height / 2);
         context.stroke();
         context.closePath();
+
         context.restore();
     }
 
@@ -61,7 +68,7 @@ class Item {
     changePlayerLuck(player) {
         let luckChangeRange = 3;
         let potentialLuckBuff = Math.floor(Math.random() * luckChangeRange);
-        if (potentialLuckBuff == 0) {
+        if (potentialLuckBuff === 0) {
             player.luck++;
         }
         else if (player.luck > 0) {
@@ -69,6 +76,8 @@ class Item {
         }
     }
 
+    // this function is called when the item is removed
+    // items are removed if the player collects or destroys them
     getRemoved() {
         this.active = false;
         // Sound taken from https://www.youtube.com/watch?v=2ZIpFytCSVc

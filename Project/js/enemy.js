@@ -1,4 +1,6 @@
 'use strict';
+
+//Enemy constants
 const enemySide = 30;
 const enemyRadius = 6;
 const fakeDespawnZone = 9001;
@@ -24,15 +26,15 @@ class Enemy {
         while (this.confirmPlayerCollision(player));
     }
 
+    // draw the enemy
     draw() {
-        // the enemy will look just like the player, but they will be coloured differently
+        // the enemy will look just like the player, but they will be coloured differently and they'll be a bit smaller
         context.save();
         context.translate(this.x, this.y); //translate the canvas to the enemy's position
 
 
         // The outer square
         context.fillStyle = "purple";
-        // The square must be spawned with its core in the center
         context.fillRect(0 - this.width / 2, 0 - this.height / 2, this.width, this.height);
 
         // The inner circle
@@ -57,13 +59,13 @@ class Enemy {
     }
 
     // The function for when an enemy is considered defeated. Will it stay down, or will it roll back?
-    defeat(gameStatus) {
-        // Enemies cannot be double killed... just in case something happens
-        if (this.active == true) {
+    getDefeated(gameStatus) {
+        // Enemies cannot be double killed... just in case
+        if (this.active && !this.rollingBack) {
             let rollbackRange = 2;
             let rollbackChance = Math.floor(Math.random() * rollbackRange);
 
-            if (rollbackChance === 0 && gameStatus.online === true) {
+            if (rollbackChance === 0 && gameStatus.online) {
                 this.rollback(gameStatus);
             }
             else {
@@ -90,7 +92,7 @@ class Enemy {
         this.rollingBack = true;
 
         setTimeout(() => {
-            if (this.rollingBack === true) {
+            if (this.rollingBack) {
                 // The enemy was not defeated, after all. Roll back! :)
                 this.y = oldY;
                 gameStatus.score -= this.value;

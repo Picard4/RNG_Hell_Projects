@@ -1,6 +1,6 @@
 'use strict';
 
-// Constants related to the entire game
+// Constants for the canvas since this is the first script to be called
 const canvas = document.getElementsByTagName('canvas')[0];
 const context = canvas.getContext('2d');
 
@@ -33,6 +33,7 @@ class Player {
         this.shield = false;
     }
 
+    // draw the player
     draw() {
         // the player will be a square with a circle in the center. 
         // the circle changes colour based on HP and whether the shield is active or not
@@ -42,7 +43,6 @@ class Player {
 
         // The outer square
         context.fillStyle = "blue";
-        // The square must be spawned with its core in the center
         context.fillRect(0 - this.width / 2, 0 - this.height / 2, this.width, this.height);
 
         // The inner circle
@@ -60,34 +60,34 @@ class Player {
     update(keysPressed) {
         this.move(keysPressed);
         this.evaluateWallCollision();
-        if (this.shield === true){
+        if (this.shield){
             this.checkActiveShieldFrames();
         }
         this.draw();
     }
 
-    // This moves the player and increases the amount of spaces they moved
+    // This moves the player
     move(keysPressed) {
-        if (keysPressed.ArrowUp === true) {
+        if (keysPressed.ArrowUp) {
             this.y -= this.speed;
         }
-        if (keysPressed.ArrowDown === true) {
+        if (keysPressed.ArrowDown) {
             this.y += this.speed;
         }
-        if (keysPressed.ArrowLeft === true) {
+        if (keysPressed.ArrowLeft) {
             this.x -= this.speed;
         }
-        if (keysPressed.ArrowRight === true) {
+        if (keysPressed.ArrowRight) {
             this.x += this.speed;
         }
     }
 
     // This function damages the player based on the value sent
-    // Even though you can't heal in game, I made the function capable of healing the player
+    // Even though you can't heal in game, I made the function capable of healing the player if a positive value is sent
     healOrDamage(valueToChangeHP) {
         this.hp += valueToChangeHP;
 
-        if (this.shield === false) {
+        if (!this.shield) {
             this.changeInnerCircleColour();
         }
 
@@ -102,12 +102,12 @@ class Player {
 
     /* Change the inner circle's colour to reflect the player's health if they lack a shield */
     changeInnerCircleColour() {
-        let thirdHp = this.startingHP / 3;
-        let twoThirdHp = thirdHp * 2;
-        if (this.hp < thirdHp) {
+        let aThirdOfHp = this.startingHP / 3;
+        let twoThirdsOfHp = aThirdOfHp * 2;
+        if (this.hp < aThirdOfHp) {
             this.innerCircleColor = "darkred";
         }
-        else if (this.hp < twoThirdHp) {
+        else if (this.hp < twoThirdsOfHp) {
             this.innerCircleColor = "yellow";
         }
         else {
@@ -116,13 +116,14 @@ class Player {
     }
 
     // this method is called when I feel like trying to OHKO the player :)
-    attemptToInstaKill(chanceOfInstaKill, messages) {
+    attemptToInstaKill(potentialInstaKillRange, messages) {
         // A higher luck stat could help to prevent an OHKO
         // assisted by https://www.w3schools.com/jsref/jsref_random.asp
         if (this.hp > 0) {
-            let potentialInstaKill = Math.floor((Math.random() * (chanceOfInstaKill * this.luck)));
+            let potentialInstaKill = Math.floor((Math.random() * (potentialInstaKillRange * this.luck)));
             if (potentialInstaKill === 0) {
                 this.hp = 0;
+                // add a message claiming the player was OHKOed for the game over screen
                 messages.gameOver.push("Congratulations you were somehow OHKOed n00b");
             }
         }
@@ -148,7 +149,7 @@ class Player {
         this.activeShieldFrames = 0;
     }
 
-    // Increment the active shield frames and deactivate the shield if its been active for its full duration
+    // Increment the active shield frames and deactivate the shield if its been active for a full duration
     checkActiveShieldFrames() {
         this.activeShieldFrames++;
         if (this.activeShieldFrames >= this.maxActiveShieldFrames){
