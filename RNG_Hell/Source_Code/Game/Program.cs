@@ -28,7 +28,7 @@ namespace Game
         static int RemoveY;
         const int upSpeed = 2;
         // sets borders to stop crashing
-        const int BorderHeight = 50;
+        const int BorderHeight = 49;
         const int BorderWidth = 150;
         const int EmptyHeight = 10;
         const int EmptyWidth = 1;
